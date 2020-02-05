@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<script src='data.js'></script>
+		<script> let deckSize = 5; </script>
+		<style>
+			body
+			{
+				background-color: black;
+				color: white;
+			}
+			#deckList
+			{
+				margin-bottom: 1em;
+			}
+			#currentDeck
+			{
+				border: 2px solid yellow;
+				display: inline-block;
+			}
+			.card
+			{
+				display: inline-block;
+			}
+		</style>
+	</head>
+
+	<body>
+		<select id='deckList'></select> &nbsp;
+		<button id='btnClear'>Clear</button> &nbsp;
+		<input type='checkbox'>Magnify</input>
+		<br/>
+		<img id='currentDeck'/>
+	</body>
+
+	<script>
+		var deckList = document.getElementById("deckList");
+		var currentDeck = document.getElementById("currentDeck");
+		var body = document.getElementsByTagName("body")[0];
+
+		currentDeck.style.width = deckSize + "em";
+
+		function loadImage(parentObject, property, onDone)
+		{
+			if (parentObject[property] instanceof HTMLImageElement)
+			{
+				onDone(parentObject[property]);
+			}
+			else
+			{
+				let image = new Image();
+				image.addEventListener("load", function()
+				{
+					parentObject[property] = image;
+					onDone(image);
+				});
+				image.src = "media/" + parentObject[property];
+			}
+		}
+
+		function getSubImage(img, x, y, w, h)
+		{
+			let cardWidth = deckSize;
+			let cardHeight = deckSize * h/w;
+			let result = document.createElement("SPAN");
+			result.classList.add("card");
+			result.style.width = cardWidth + "em";
+			result.style.height = cardHeight + "em";
+			result.style["background-position-x"] = (-1 * cardWidth * x / w) + "em";
+			result.style["background-position-y"] = (-1 * cardHeight * y / h) + "em";
+			result.style["background-image"] = "url(" + img.src + ")";
+			result.style["background-size"] = (deckSize * img.width / w) + "em";
+			return result;
+		}
+
+		function loadDeck(deck)
+		{
+			// If deck already loaded, just use it as-is
+			if (deck.loaded)
+			{
+				currentDeck.src = deck.backImage.src;
+				return;
+			}
+
+			// Load the deck
+			loadImage(deck, "backImage", function(img)
+			{
+				currentDeck.src = img.src;
+			});
+			let countdown = deck.images.length;
+			for (var i = 0; i < deck.images.length; i++)
+			{
+				loadImage(deck.images, i, function(img)
+				{
+					countdown--;
+					if (countdown == 0)
+					{
+						// Slice all cards from images
+						for (var k = 0; k < deck.cards.length; k++)
+						{
+							if (deck.cards[k] instanceof Array)
+							{
+								deck.cards[k] = getSubImage(
+									deck.images[deck.cards[k][0]],
+									deck.cards[k][1],
+									deck.cards[k][2],
+									deck.w,
+									deck.h);
+							}
+						}
+						// Remember that this deck has been loaded
+						decks[deckList.value].loaded = true;						
+					}
+				});
+			}
+		}
+
+		// React to selecting a deck with the dropdown
+		function onDeckSet()
+		{
+			loadDeck(decks[deckList.value]);
+		}
+
+		// Init dropdown of decks
+		for (var i = 0; i < decks.length; i++)
+		{
+			deckList.innerHTML += "<option value='" + i + "'>" + decks[i].name + "</option>";
+		}
+		deckList.addEventListener("change", onDeckSet);
+		onDeckSet();
+
+		// Init deck dragging
+		currentDeck.addEventListener("click", function()
+		{
+//			for (let i = 0; i < decks[deckList.value].cards.length; i++)
+//			{
+//				body.appendChild(decks[deckList.value].cards[i]);
+//				body.innerHTML += "<br/>";
+//			}
+
+			body.appendChild(decks[deckList.value].cards[0].cloneNode(true));
+			body.appendChild(decks[deckList.value].cards[0].cloneNode(true));
+			body.appendChild(decks[deckList.value].cards[0].cloneNode(true));
+		});
+
+		// Clear button handling
+		document.getElementById("btnClear").addEventListener("click", function()
+		{
+			var cards = document.getElementsByClassName("card");
+			while (cards[0])
+			{
+				cards[0].parentNode.removeChild(cards[0]);
+			}
+		});
+	</script>
+</html>
