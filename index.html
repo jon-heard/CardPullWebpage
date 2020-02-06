@@ -138,7 +138,7 @@
 		//////////////////////////////////
 		// Create card by dragging deck //
 		//////////////////////////////////
-		function onDeckDragStart(evt)
+		function onDeckDrag(evt)
 		{
 			evt = evt || window.event;
 			evt.preventDefault();
@@ -157,6 +157,7 @@
 			newCard.addEventListener("mousedown", onCardDragStart);
 			newCard.addEventListener("mousemove", onHover);
 			newCard.addEventListener("mouseleave", onUnhover);
+			newCard.addEventListener("dblclick", onDoubleClick);
 			newCard.style.left = deckUiRect.left;
 			newCard.style.top = deckUiRect.top;
 			body.appendChild(newCard);
@@ -167,8 +168,8 @@
 			document.addEventListener("mouseup", onCardDragEnd);
 			document.addEventListener("mousemove", onCardDragging);
 		}
-		deckUi.addEventListener("touchstart", onDeckDragStart);
-		deckUi.addEventListener("mousedown", onDeckDragStart);
+		deckUi.addEventListener("touchstart", onDeckDrag);
+		deckUi.addEventListener("mousedown", onDeckDrag);
 
 
 		////////////////////
@@ -239,6 +240,15 @@
 		function onUnhover(evt)
 		{
 			currentHovered = null;
+		}
+
+
+		///////////////////
+		// Card deletion //
+		///////////////////
+		function onDoubleClick(evt)
+		{
+			evt.target.remove();
 		}
 	</script>
 </html>
