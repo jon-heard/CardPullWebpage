@@ -19,7 +19,9 @@
 			}
 			.card
 			{
+				position: absolute;
 				display: inline-block;
+				cursor: move;
 			}
 		</style>
 	</head>
@@ -137,9 +139,9 @@
 //				body.innerHTML += "<br/>";
 //			}
 
-			body.appendChild(decks[deckList.value].cards[0].cloneNode(true));
-			body.appendChild(decks[deckList.value].cards[0].cloneNode(true));
-			body.appendChild(decks[deckList.value].cards[0].cloneNode(true));
+			body.appendChild(cloneCard(decks[deckList.value].cards[0]));
+			body.appendChild(cloneCard(decks[deckList.value].cards[0]));
+			body.appendChild(cloneCard(decks[deckList.value].cards[0]));
 		});
 
 		// Clear button handling
@@ -151,5 +153,44 @@
 				cards[0].parentNode.removeChild(cards[0]);
 			}
 		});
+
+		function cloneCard(card)
+		{
+			let result = card.cloneNode(true);
+			result.addEventListener("touchstart", onDragStart, false);
+			result.addEventListener("touchend", onDragEnd, false);
+			result.addEventListener("mousedown", onDragStart, false);
+			result.addEventListener("mouseup", onDragEnd, false);
+			return result;
+		}
+
+		let cardBeingDragged = 0;
+		let dragOffsetX = 0;
+		let dragOffsetY = 0;
+		function onDragStart(evt)
+		{
+			evt = evt || window.event;
+			evt.preventDefault();
+			cardBeingDragged = evt.target;
+			dragOffsetX = evt.clientX - Number(cardBeingDragged.style.left.replace("px", ""));
+			dragOffsetY = evt.clientY - Number(cardBeingDragged.style.top.replace("px", ""));
+			document.onmouseup = onDragEnd;
+			document.onmousemove = onDragging;
+console.log("Drag started: " + evt.clientX + ", " + Number(cardBeingDragged.style.left.replace("px", "")));
+		}
+		function onDragging(evt)
+		{
+			evt = evt || window.event;
+			evt.preventDefault();
+			cardBeingDragged.style.left = evt.clientX - dragOffsetX;
+			cardBeingDragged.style.top = evt.clientY - dragOffsetY;
+console.log("Dragging: " + dragOffsetX + ", " + dragOffsetY);
+		}
+		function onDragEnd(evt)
+		{
+			document.onmouseup = null;
+			document.onmousemove = null;
+console.log("Drag ended");
+		}
 	</script>
 </html>
