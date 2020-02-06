@@ -18,6 +18,15 @@
 				display: inline-block;
 				cursor: move;
 			}
+			#loadingUi
+			{
+				position: absolute;
+				cursor: not-allowed;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				user-select: none;
+			}
 			.card
 			{
 				position: absolute;
@@ -39,6 +48,7 @@
 		<button id='btnClear'>Clear</button> &nbsp;
 		<br/>
 		<canvas id='deckUi'></canvas>
+		<span id='loadingUi'>Loading...</canvas>
 	</body>
 
 	<script>
@@ -47,11 +57,37 @@
 		//////////
 		var body = document.getElementsByTagName("body")[0];
 
+
 		//////////////////
-		// DECK DISPLAY //
+		// DECK UI //
 		//////////////////
 		var deckUi = document.getElementById("deckUi");
 		deckUi.style.width = cardSize + "em";
+
+
+		////////////////
+		// LOADING UI //
+		////////////////
+		var loadingUi = document.getElementById("loadingUi");
+		function initLoadingUi() // Encapsulating for local scope for temp vars
+		{
+			let deckUiRect = deckUi.getBoundingClientRect();
+			loadingUi.style.left = deckUiRect.left;
+			loadingUi.style.top = deckUiRect.top;
+			loadingUi.style.width = deckUiRect.width;
+		}
+		initLoadingUi();
+		function showLoadingUi()
+		{
+			let deckUiRect = deckUi.getBoundingClientRect();
+			loadingUi.style.height = deckUiRect.height;
+			loadingUi.style.display = "flex";
+		}
+		function hideLoadingUi()
+		{
+			loadingUi.style.display = "none";
+		}
+
 
 		///////////////////
 		// LIST OF DECKS //
@@ -68,6 +104,7 @@
 		deckList.addEventListener("change", onDeckSelected);
 		onDeckSelected();
 
+
 		//////////////////
 		// CLEAR BUTTON //
 		//////////////////
@@ -81,6 +118,7 @@
 		});
 
 
+		// Load image into a canvas
 		function loadImage(parentObject, property, onDone)
 		{
 			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
@@ -103,17 +141,23 @@
 			}
 		}
 
+
+		// Called when user sets the current deck
 		function loadDeck(deck)
 		{
-			// If deck already loaded, just use it as-is and then return
+			// If deck was previously loaded, just set it and return
 			if (deck.loaded)
 			{
 				deckUi.width = deck.backImage.width;
 				deckUi.height = deck.backImage.height;
-				deckUi.getContext('2d').drawImage(deck.backImage, 0, 0);
+				deckUi.getContext("2d").drawImage(deck.backImage, 0, 0);
 				return;
 			}
 
+			// Disable deckUi while loading the deck
+			showLoadingUi();
+			deckUi.getContext("2d").clearRect(0, 0, deckUi.width, deckUi.height);
+			// Load the deck
 			let countdown = deck.images.length;
 			for (var i = 0; i < deck.images.length; i++)
 			{
@@ -122,12 +166,14 @@
 					countdown--;
 					if (countdown == 0)
 					{
-						// Load the back image once all deck images are loaded
+						deck.loaded = true;
+						// Enable DeckUi once all deck images are loaded
 						loadImage(deck, "backImage", function(img)
 						{
 							deckUi.width = img.width;
 							deckUi.height = img.height;
-							deckUi.getContext('2d').drawImage(img, 0, 0);
+							deckUi.getContext("2d").drawImage(img, 0, 0);
+							hideLoadingUi();
 						});
 					}
 				});
@@ -143,6 +189,10 @@
 			evt = evt || window.event;
 			evt.preventDefault();
 			let deck = decks[deckList.value];
+			if (!deck.loaded)
+			{
+				return;
+			}
 			let deckUiRect = deckUi.getBoundingClientRect();
 			let cardIndex = Math.floor(Math.random() * deck.cards.length);
 			let srcCanvas = deck.images[deck.cards[cardIndex][0]];
@@ -218,7 +268,8 @@
 				currentMagnified_left = currentMagnified.style.left;
 				currentMagnified_top = currentMagnified.style.top;
 				currentMagnified_width = currentMagnified.style.width;
-				currentMagnified.style.left = currentMagnified.style.top = "";
+				currentMagnified.style.left = "";
+				currentMagnified.style.top = "";
 				currentMagnified.style.width = "";
 				currentMagnified.classList.add("magnified");
 			}

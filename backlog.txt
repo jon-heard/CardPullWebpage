@@ -1,5 +1,6 @@
 add way to see all cards at once (to test new decks)
-have deck be locked until fully loaded (with "Loading" text instead of cardback)
-add flag to disallow duplicates
+	fantasy in particular seems broken
+have dragged picture be on top of others and with a shadow
+add flag to disallow duplicates (both in deck data and as checkbox)
 add flag to have flipped cards
 different zoom levels?
