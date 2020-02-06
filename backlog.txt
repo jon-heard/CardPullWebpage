@@ -1,4 +1,4 @@
-find more optimal way to manage images (so slow!)
+clean up code
 add magnification
 add other decks
 double-click or double-tap removes card

@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script src='data.js'></script>
-		<script> let deckSize = 5; </script>
+		<script> let cardSize = 5; </script>
 		<style>
 			body
 			{
@@ -40,30 +40,43 @@
 		var currentDeck = document.getElementById("currentDeck");
 		var body = document.getElementsByTagName("body")[0];
 
-		currentDeck.style.width = deckSize + "em";
+		currentDeck.style.width = cardSize + "em";
 
-		function loadImage(parentObject, property, onDone)
+		function loadImageData(parentObject, property, onDone, asCanvas)
 		{
-			if (parentObject[property] instanceof HTMLImageElement)
-			{
-				onDone(parentObject[property]);
-			}
-			else
+			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
 			{
 				let image = new Image();
 				image.addEventListener("load", function()
 				{
-					parentObject[property] = image;
-					onDone(image);
+					if (!asCanvas)
+					{
+						parentObject[property] = image;
+						onDone(image);
+					}
+					else
+					{
+						let canvas = document.createElement("CANVAS");
+						canvas.width = image.width;
+						canvas.height = image.height;
+						let ctx = canvas.getContext("2d");
+						ctx.drawImage(image, 0, 0);
+						parentObject[property] = canvas;
+						onDone(canvas);
+					}
 				});
 				image.src = "media/" + parentObject[property];
+			}
+			else
+			{
+				onDone(parentObject[property]);
 			}
 		}
 
 		function getSubImage(img, x, y, w, h)
 		{
-			let cardWidth = deckSize;
-			let cardHeight = deckSize * h/w;
+			let cardWidth = cardSize;
+			let cardHeight = cardSize * h/w;
 			let result = document.createElement("SPAN");
 			result.classList.add("card");
 			result.style.width = cardWidth + "em";
@@ -71,7 +84,7 @@
 			result.style["background-position-x"] = (-1 * cardWidth * x / w) + "em";
 			result.style["background-position-y"] = (-1 * cardHeight * y / h) + "em";
 			result.style["background-image"] = "url(" + img.src + ")";
-			result.style["background-size"] = (deckSize * img.width / w) + "em";
+			result.style["background-size"] = (cardSize * img.width / w) + "em";
 			return result;
 		}
 
@@ -85,35 +98,46 @@
 			}
 
 			// Load the deck
-			loadImage(deck, "backImage", function(img)
+			loadImageData(deck, "backImage", function(img)
 			{
 				currentDeck.src = img.src;
 			});
 			let countdown = deck.images.length;
 			for (var i = 0; i < deck.images.length; i++)
 			{
-				loadImage(deck.images, i, function(img)
+				loadImageData(deck.images, i, function(img)
 				{
 					countdown--;
-					if (countdown == 0)
+/*					if (countdown == 0)
 					{
 						// Slice all cards from images
 						for (var k = 0; k < deck.cards.length; k++)
 						{
 							if (deck.cards[k] instanceof Array)
 							{
-								deck.cards[k] = getSubImage(
-									deck.images[deck.cards[k][0]],
-									deck.cards[k][1],
-									deck.cards[k][2],
-									deck.w,
-									deck.h);
+							//	deck.cards[k] = getSubImage(
+							//		deck.images[deck.cards[k][0]],
+							//		deck.cards[k][1],
+							//		deck.cards[k][2],
+							//		deck.w,
+							//		deck.h);
+
+								let srcCanvas = deck.images[deck.cards[k][0]];
+								let srcCtx = srcCanvas.getContext("2d");
+								let dstCanvas = document.createElement("CANVAS");
+								dstCanvas.width = deck.w;
+								dstCanvas.height = deck.h;
+								dstCanvas.style.width = cardSize + "em";
+								dstCanvas.classList.add("card");
+								let dstCtx = dstCanvas.getContext("2d");
+								dstCtx.putImageData(srcCtx.getImageData(deck.cards[k][1], deck.cards[k][2], deck.w, deck.h), 0, 0);
+								deck.cards[k] = dstCanvas;
 							}
 						}
 						// Remember that this deck has been loaded
-						decks[deckList.value].loaded = true;						
+						decks[deckList.value].loaded = true;
 					}
-				});
+*/				}, true);
 			}
 		}
 
@@ -147,7 +171,22 @@
 			evt.preventDefault();
 			let deckRect = currentDeck.getBoundingClientRect();
 			let rndIndex = Math.floor(Math.random() * decks[deckList.value].cards.length);
-			let newCard = decks[deckList.value].cards[rndIndex].cloneNode(true);
+//			let newCard = decks[deckList.value].cards[rndIndex].cloneNode(true);
+
+								let deck = decks[deckList.value];
+								let srcCanvas = deck.images[deck.cards[rndIndex][0]];
+								let srcCtx = srcCanvas.getContext("2d");
+								let dstCanvas = document.createElement("CANVAS");
+								dstCanvas.width = deck.w;
+								dstCanvas.height = deck.h;
+								dstCanvas.style.width = cardSize + "em";
+								dstCanvas.classList.add("card");
+								let dstCtx = dstCanvas.getContext("2d");
+								dstCtx.putImageData(srcCtx.getImageData(deck.cards[rndIndex][1], deck.cards[rndIndex][2], deck.w, deck.h), 0, 0);
+
+			let newCard = dstCanvas;
+
+//			newCard.getContext("2d").drawImage(decks[deckList.value].cards[rndIndex], 0, 0);
 			newCard.addEventListener("touchstart", onCardDragStart, false);
 			newCard.addEventListener("mousedown", onCardDragStart, false);
 			newCard.style.left = deckRect.left;
