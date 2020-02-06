@@ -32,6 +32,11 @@
 				position: absolute;
 				display: inline-block;
 				cursor: move;
+				box-shadow: 3px 3px 5px rgba(0,0,0,.85);
+			}
+			.dragged
+			{
+				box-shadow: 20px 20px 10px rgba(0,0,0,.75);
 			}
 			.magnified
 			{
@@ -213,6 +218,7 @@
 			body.appendChild(newCard);
 
 			cardBeingDragged = newCard;
+			cardBeingDragged.classList.add("dragged");
 			dragOffsetX = evt.clientX - deckUiRect.left;
 			dragOffsetY = evt.clientY - deckUiRect.top;
 			document.addEventListener("mouseup", onCardDragEnd);
@@ -233,6 +239,8 @@
 			evt = evt || window.event;
 			evt.preventDefault();
 			cardBeingDragged = evt.target;
+			cardBeingDragged.classList.add("dragged");
+			body.appendChild(cardBeingDragged);
 			dragOffsetX = evt.clientX - Number(cardBeingDragged.style.left.replace("px", ""));
 			dragOffsetY = evt.clientY - Number(cardBeingDragged.style.top.replace("px", ""));
 			document.addEventListener("mouseup", onCardDragEnd);
@@ -247,6 +255,7 @@
 		}
 		function onCardDragEnd(evt)
 		{
+			cardBeingDragged.classList.remove("dragged");
 			document.removeEventListener("mouseup", onCardDragEnd);
 			document.removeEventListener("mousemove", onCardDragging);
 		}
