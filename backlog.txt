@@ -1,5 +1,6 @@
-put zoom position at top of current screen scroll
 fix bug where you can't zoom multiple times without moving mouse
+
+add countdown to "loading..." text (3/4)
 
 add flag to disallow duplicates (both in deck data and as checkbox)
 add flag to have flipped cards
