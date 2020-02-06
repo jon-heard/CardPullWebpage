@@ -43,7 +43,7 @@
 			{
 				box-shadow: 20px 20px 10px rgba(0,0,0,.75);
 			}
-			.magnified
+			.zoomed
 			{
 				position: fixed;
 				left: 0;
@@ -255,7 +255,13 @@
 			let newCard = document.createElement("CANVAS");
 			newCard.width = deck.w;
 			newCard.height = deck.h;
-			newCard.getContext("2d").drawImage(srcCanvas, deck.cards[index][1], deck.cards[index][2], deck.w, deck.h, 0, 0, deck.w, deck.h);
+			newCard.getContext("2d").drawImage(
+				srcCanvas,
+				deck.cards[index][1],
+				deck.cards[index][2],
+				deck.w, deck.h,
+				0, 0,
+				deck.w, deck.h);
 			newCard.style.width = cardSize + "em";
 			newCard.classList.add("card");
 			newCard.addEventListener("touchstart", onCardDragStart);
@@ -301,36 +307,36 @@
 		}
 
 
-		/////////////
-		// Magnify //
-		/////////////
+		//////////
+		// ZOOM //
+		//////////
 		let currentHovered = null;
-		let currentMagnified = null;
-		let currentMagnified_left = 0;
-		let currentMagnified_top = 0;
-		let currentMagnified_width = 0;
+		let currentZoomed = null;
+		let currentZoomed_left = 0;
+		let currentZoomed_top = 0;
+		let currentZoomed_width = 0;
 		document.addEventListener("keydown", function(evt)
 		{
 			if(evt.key == "Control" && currentHovered)
 			{
-				currentMagnified = currentHovered;
-				currentMagnified_left = currentMagnified.style.left;
-				currentMagnified_top = currentMagnified.style.top;
-				currentMagnified_width = currentMagnified.style.width;
-				currentMagnified.style.left = "";
-				currentMagnified.style.top = "";
-				currentMagnified.style.width = "";
-				currentMagnified.classList.add("magnified");
+				currentZoomed = currentHovered;
+				currentZoomed_left = currentZoomed.style.left;
+				currentZoomed_top = currentZoomed.style.top;
+				currentZoomed_width = currentZoomed.style.width;
+				currentZoomed.style.left = "";
+				currentZoomed.style.top = "";
+				currentZoomed.style.width = "";
+				currentZoomed.classList.add("zoomed");
 			}
 		});
 		document.addEventListener("keyup", function(evt)
 		{
-			if(evt.key == "Control" && currentMagnified)
+			if(evt.key == "Control" && currentZoomed)
 			{
-				currentMagnified.style.left = currentMagnified_left;
-				currentMagnified.style.top = currentMagnified_top;
-				currentMagnified.style.width = currentMagnified_width;
-				currentMagnified.classList.remove("magnified");
+				currentZoomed.style.left = currentZoomed_left;
+				currentZoomed.style.top = currentZoomed_top;
+				currentZoomed.style.width = currentZoomed_width;
+				currentZoomed.classList.remove("zoomed");
 			}
 		});
 		function onHover(evt)
@@ -339,7 +345,10 @@
 		}
 		function onUnhover(evt)
 		{
-			currentHovered = null;
+			if (currentZoomed == null) // Don't lose hovered if zoomed or can't rezoom without mouse move
+			{
+				currentHovered = null;
+			}
 		}
 
 
