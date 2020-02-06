@@ -12,7 +12,7 @@
 			{
 				margin-bottom: 1em;
 			}
-			#currentDeck
+			#deckUi
 			{
 				border: 2px solid yellow;
 				display: inline-block;
@@ -32,130 +32,39 @@
 		<button id='btnClear'>Clear</button> &nbsp;
 		<input type='checkbox'>Magnify</input>
 		<br/>
-		<img id='currentDeck'/>
+		<canvas id='deckUi'></canvas>
 	</body>
 
 	<script>
-		var deckList = document.getElementById("deckList");
-		var currentDeck = document.getElementById("currentDeck");
+		//////////
+		// BODY //
+		//////////
 		var body = document.getElementsByTagName("body")[0];
 
-		currentDeck.style.width = cardSize + "em";
+		//////////////////
+		// DECK DISPLAY //
+		//////////////////
+		var deckUi = document.getElementById("deckUi");
+		deckUi.style.width = cardSize + "em";
 
-		function loadImageData(parentObject, property, onDone, asCanvas)
-		{
-			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
-			{
-				let image = new Image();
-				image.addEventListener("load", function()
-				{
-					if (!asCanvas)
-					{
-						parentObject[property] = image;
-						onDone(image);
-					}
-					else
-					{
-						let canvas = document.createElement("CANVAS");
-						canvas.width = image.width;
-						canvas.height = image.height;
-						let ctx = canvas.getContext("2d");
-						ctx.drawImage(image, 0, 0);
-						parentObject[property] = canvas;
-						onDone(canvas);
-					}
-				});
-				image.src = "media/" + parentObject[property];
-			}
-			else
-			{
-				onDone(parentObject[property]);
-			}
-		}
-
-		function getSubImage(img, x, y, w, h)
-		{
-			let cardWidth = cardSize;
-			let cardHeight = cardSize * h/w;
-			let result = document.createElement("SPAN");
-			result.classList.add("card");
-			result.style.width = cardWidth + "em";
-			result.style.height = cardHeight + "em";
-			result.style["background-position-x"] = (-1 * cardWidth * x / w) + "em";
-			result.style["background-position-y"] = (-1 * cardHeight * y / h) + "em";
-			result.style["background-image"] = "url(" + img.src + ")";
-			result.style["background-size"] = (cardSize * img.width / w) + "em";
-			return result;
-		}
-
-		function loadDeck(deck)
-		{
-			// If deck already loaded, just use it as-is
-			if (deck.loaded)
-			{
-				currentDeck.src = deck.backImage.src;
-				return;
-			}
-
-			// Load the deck
-			loadImageData(deck, "backImage", function(img)
-			{
-				currentDeck.src = img.src;
-			});
-			let countdown = deck.images.length;
-			for (var i = 0; i < deck.images.length; i++)
-			{
-				loadImageData(deck.images, i, function(img)
-				{
-					countdown--;
-/*					if (countdown == 0)
-					{
-						// Slice all cards from images
-						for (var k = 0; k < deck.cards.length; k++)
-						{
-							if (deck.cards[k] instanceof Array)
-							{
-							//	deck.cards[k] = getSubImage(
-							//		deck.images[deck.cards[k][0]],
-							//		deck.cards[k][1],
-							//		deck.cards[k][2],
-							//		deck.w,
-							//		deck.h);
-
-								let srcCanvas = deck.images[deck.cards[k][0]];
-								let srcCtx = srcCanvas.getContext("2d");
-								let dstCanvas = document.createElement("CANVAS");
-								dstCanvas.width = deck.w;
-								dstCanvas.height = deck.h;
-								dstCanvas.style.width = cardSize + "em";
-								dstCanvas.classList.add("card");
-								let dstCtx = dstCanvas.getContext("2d");
-								dstCtx.putImageData(srcCtx.getImageData(deck.cards[k][1], deck.cards[k][2], deck.w, deck.h), 0, 0);
-								deck.cards[k] = dstCanvas;
-							}
-						}
-						// Remember that this deck has been loaded
-						decks[deckList.value].loaded = true;
-					}
-*/				}, true);
-			}
-		}
-
-		// React to selecting a deck with the dropdown
-		function onDeckSet()
-		{
-			loadDeck(decks[deckList.value]);
-		}
-
-		// Init dropdown of decks
+		///////////////////
+		// LIST OF DECKS //
+		///////////////////
+		var deckList = document.getElementById("deckList");
 		for (var i = 0; i < decks.length; i++)
 		{
 			deckList.innerHTML += "<option value='" + i + "'>" + decks[i].name + "</option>";
 		}
-		deckList.addEventListener("change", onDeckSet);
-		onDeckSet();
+		function onDeckSelected()
+		{
+			loadDeck(decks[deckList.value]);
+		}
+		deckList.addEventListener("change", onDeckSelected);
+		onDeckSelected();
 
-		// Clear button handling
+		//////////////////
+		// CLEAR BUTTON //
+		//////////////////
 		document.getElementById("btnClear").addEventListener("click", function()
 		{
 			var cards = document.getElementsByClassName("card");
@@ -165,41 +74,89 @@
 			}
 		});
 
+
+		function loadImage(parentObject, property, onDone)
+		{
+			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
+			{
+				let image = new Image();
+				image.addEventListener("load", function()
+				{
+					let canvas = document.createElement("CANVAS");
+					canvas.width = image.width;
+					canvas.height = image.height;
+					canvas.getContext("2d").drawImage(image, 0, 0);
+					parentObject[property] = canvas;
+					if (onDone) { onDone(canvas); }
+				});
+				image.src = "media/" + parentObject[property];
+			}
+			else
+			{
+				 if (onDone) { onDone(parentObject[property]); }
+			}
+		}
+
+		function loadDeck(deck)
+		{
+			// If deck already loaded, just use it as-is and then return
+			if (deck.loaded)
+			{
+				deckUi.width = deck.backImage.width;
+				deckUi.height = deck.backImage.height;
+				deckUi.getContext('2d').drawImage(deck.backImage, 0, 0);
+				return;
+			}
+
+			let countdown = deck.images.length;
+			for (var i = 0; i < deck.images.length; i++)
+			{
+				loadImage(deck.images, i, function(img)
+				{
+					countdown--;
+					if (countdown == 0)
+					{
+						// Load the back image once all deck images are loaded
+						loadImage(deck, "backImage", function(img)
+						{
+							deckUi.width = img.width;
+							deckUi.height = img.height;
+							deckUi.getContext('2d').drawImage(img, 0, 0);
+						});
+					}
+				});
+			}
+		}
+
 		function onDeckDragStart(evt)
 		{
 			evt = evt || window.event;
 			evt.preventDefault();
-			let deckRect = currentDeck.getBoundingClientRect();
-			let rndIndex = Math.floor(Math.random() * decks[deckList.value].cards.length);
-//			let newCard = decks[deckList.value].cards[rndIndex].cloneNode(true);
+			let deck = decks[deckList.value];
+			let deckUiRect = deckUi.getBoundingClientRect();
+			let cardIndex = Math.floor(Math.random() * deck.cards.length);
+			let srcCanvas = deck.images[deck.cards[cardIndex][0]];
 
-								let deck = decks[deckList.value];
-								let srcCanvas = deck.images[deck.cards[rndIndex][0]];
-								let srcCtx = srcCanvas.getContext("2d");
-								let dstCanvas = document.createElement("CANVAS");
-								dstCanvas.width = deck.w;
-								dstCanvas.height = deck.h;
-								dstCanvas.style.width = cardSize + "em";
-								dstCanvas.classList.add("card");
-								let dstCtx = dstCanvas.getContext("2d");
-								dstCtx.putImageData(srcCtx.getImageData(deck.cards[rndIndex][1], deck.cards[rndIndex][2], deck.w, deck.h), 0, 0);
-
-			let newCard = dstCanvas;
-
-//			newCard.getContext("2d").drawImage(decks[deckList.value].cards[rndIndex], 0, 0);
+			let newCard = document.createElement("CANVAS");
+			newCard.width = deck.w;
+			newCard.height = deck.h;
+			newCard.getContext("2d").drawImage(srcCanvas, deck.cards[cardIndex][1], deck.cards[cardIndex][2], deck.w, deck.h, 0, 0, deck.w, deck.h);
+			newCard.style.width = cardSize + "em";
+			newCard.classList.add("card");
 			newCard.addEventListener("touchstart", onCardDragStart, false);
 			newCard.addEventListener("mousedown", onCardDragStart, false);
-			newCard.style.left = deckRect.left;
-			newCard.style.top = deckRect.top;
-			cardBeingDragged = newCard;
+			newCard.style.left = deckUiRect.left;
+			newCard.style.top = deckUiRect.top;
 			body.appendChild(newCard);
-			dragOffsetX = evt.clientX - deckRect.left;
-			dragOffsetY = evt.clientY - deckRect.top;
+
+			cardBeingDragged = newCard;
+			dragOffsetX = evt.clientX - deckUiRect.left;
+			dragOffsetY = evt.clientY - deckUiRect.top;
 			document.onmouseup = onCardDragEnd;
 			document.onmousemove = onCardDragging;
 		}
-		currentDeck.addEventListener("touchstart", onDeckDragStart, false);
-		currentDeck.addEventListener("mousedown", onDeckDragStart, false);
+		deckUi.addEventListener("touchstart", onDeckDragStart, false);
+		deckUi.addEventListener("mousedown", onDeckDragStart, false);
 
 		let cardBeingDragged = 0;
 		let dragOffsetX = 0;

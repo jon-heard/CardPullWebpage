@@ -1,4 +1,3 @@
-clean up code
 add magnification
 add other decks
 double-click or double-tap removes card
