@@ -1,5 +1,3 @@
-add countdown to "loading..." text (3/4)
-
 add flag to disallow duplicates (both in deck data and as checkbox)
 add flag to have flipped cards
 different zoom levels?
