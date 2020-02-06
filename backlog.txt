@@ -1,4 +1,4 @@
-add other decks
+add way to see all cards at once (to test new decks)
 have deck be locked until fully loaded (with "Loading" text instead of cardback)
 add flag to disallow duplicates
 add flag to have flipped cards
