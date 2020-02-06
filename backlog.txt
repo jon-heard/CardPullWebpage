@@ -1,6 +1,6 @@
-add magnification
 add other decks
 double-click or double-tap removes card
 have deck be locked until fully loaded (with "Loading" text instead of cardback)
 add flag to disallow duplicates
 add flag to have flipped cards
+different zoom levels?

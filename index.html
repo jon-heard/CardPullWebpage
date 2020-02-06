@@ -24,13 +24,19 @@
 				display: inline-block;
 				cursor: move;
 			}
+			.magnified
+			{
+				left: 0;
+				top: 0;
+				height: 100%;
+				z-index: 100;
+			}
 		</style>
 	</head>
 
 	<body>
 		<select id='deckList'></select> &nbsp;
 		<button id='btnClear'>Clear</button> &nbsp;
-		<input type='checkbox'>Magnify</input>
 		<br/>
 		<canvas id='deckUi'></canvas>
 	</body>
@@ -128,6 +134,10 @@
 			}
 		}
 
+
+		//////////////////////////////////
+		// Create card by dragging deck //
+		//////////////////////////////////
 		function onDeckDragStart(evt)
 		{
 			evt = evt || window.event;
@@ -143,8 +153,10 @@
 			newCard.getContext("2d").drawImage(srcCanvas, deck.cards[cardIndex][1], deck.cards[cardIndex][2], deck.w, deck.h, 0, 0, deck.w, deck.h);
 			newCard.style.width = cardSize + "em";
 			newCard.classList.add("card");
-			newCard.addEventListener("touchstart", onCardDragStart, false);
-			newCard.addEventListener("mousedown", onCardDragStart, false);
+			newCard.addEventListener("touchstart", onCardDragStart);
+			newCard.addEventListener("mousedown", onCardDragStart);
+			newCard.addEventListener("mousemove", onHover);
+			newCard.addEventListener("mouseleave", onUnhover);
 			newCard.style.left = deckUiRect.left;
 			newCard.style.top = deckUiRect.top;
 			body.appendChild(newCard);
@@ -152,12 +164,16 @@
 			cardBeingDragged = newCard;
 			dragOffsetX = evt.clientX - deckUiRect.left;
 			dragOffsetY = evt.clientY - deckUiRect.top;
-			document.onmouseup = onCardDragEnd;
-			document.onmousemove = onCardDragging;
+			document.addEventListener("mouseup", onCardDragEnd);
+			document.addEventListener("mousemove", onCardDragging);
 		}
-		deckUi.addEventListener("touchstart", onDeckDragStart, false);
-		deckUi.addEventListener("mousedown", onDeckDragStart, false);
+		deckUi.addEventListener("touchstart", onDeckDragStart);
+		deckUi.addEventListener("mousedown", onDeckDragStart);
 
+
+		////////////////////
+		// Dragging cards //
+		////////////////////
 		let cardBeingDragged = 0;
 		let dragOffsetX = 0;
 		let dragOffsetY = 0;
@@ -168,8 +184,8 @@
 			cardBeingDragged = evt.target;
 			dragOffsetX = evt.clientX - Number(cardBeingDragged.style.left.replace("px", ""));
 			dragOffsetY = evt.clientY - Number(cardBeingDragged.style.top.replace("px", ""));
-			document.onmouseup = onCardDragEnd;
-			document.onmousemove = onCardDragging;
+			document.addEventListener("mouseup", onCardDragEnd);
+			document.addEventListener("mousemove", onCardDragging);
 		}
 		function onCardDragging(evt)
 		{
@@ -180,8 +196,49 @@
 		}
 		function onCardDragEnd(evt)
 		{
-			document.onmouseup = null;
-			document.onmousemove = null;
+			document.removeEventListener("mouseup", onCardDragEnd);
+			document.removeEventListener("mousemove", onCardDragging);
+		}
+
+
+		/////////////
+		// Magnify //
+		/////////////
+		let currentHovered = null;
+		let currentMagnified = null;
+		let currentMagnified_left = 0;
+		let currentMagnified_top = 0;
+		let currentMagnified_width = 0;
+		document.addEventListener("keydown", function(evt)
+		{
+			if(evt.key == "Control" && currentHovered)
+			{
+				currentMagnified = currentHovered;
+				currentMagnified_left = currentMagnified.style.left;
+				currentMagnified_top = currentMagnified.style.top;
+				currentMagnified_width = currentMagnified.style.width;
+				currentMagnified.style.left = currentMagnified.style.top = "";
+				currentMagnified.style.width = "";
+				currentMagnified.classList.add("magnified");
+			}
+		});
+		document.addEventListener("keyup", function(evt)
+		{
+			if(evt.key == "Control" && currentMagnified)
+			{
+				currentMagnified.style.left = currentMagnified_left;
+				currentMagnified.style.top = currentMagnified_top;
+				currentMagnified.style.width = currentMagnified_width;
+				currentMagnified.classList.remove("magnified");
+			}
+		});
+		function onHover(evt)
+		{
+			currentHovered = evt.target;
+		}
+		function onUnhover(evt)
+		{
+			currentHovered = null;
 		}
 	</script>
 </html>
