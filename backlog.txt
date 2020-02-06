@@ -1,5 +1,4 @@
-get card dragging working
-get dragging off of deck (aways 0)
 make dragging off deck random
+double-click or double-tap removes card
 add magnification
 add other decks

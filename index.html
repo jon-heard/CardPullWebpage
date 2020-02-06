@@ -130,20 +130,6 @@
 		deckList.addEventListener("change", onDeckSet);
 		onDeckSet();
 
-		// Init deck dragging
-		currentDeck.addEventListener("click", function()
-		{
-//			for (let i = 0; i < decks[deckList.value].cards.length; i++)
-//			{
-//				body.appendChild(decks[deckList.value].cards[i]);
-//				body.innerHTML += "<br/>";
-//			}
-
-			body.appendChild(cloneCard(decks[deckList.value].cards[0]));
-			body.appendChild(cloneCard(decks[deckList.value].cards[0]));
-			body.appendChild(cloneCard(decks[deckList.value].cards[0]));
-		});
-
 		// Clear button handling
 		document.getElementById("btnClear").addEventListener("click", function()
 		{
@@ -154,43 +140,50 @@
 			}
 		});
 
-		function cloneCard(card)
+		function onDeckDragStart(evt)
 		{
-			let result = card.cloneNode(true);
-			result.addEventListener("touchstart", onDragStart, false);
-			result.addEventListener("touchend", onDragEnd, false);
-			result.addEventListener("mousedown", onDragStart, false);
-			result.addEventListener("mouseup", onDragEnd, false);
-			return result;
+			evt = evt || window.event;
+			evt.preventDefault();
+			let deckRect = currentDeck.getBoundingClientRect();
+			let newCard = decks[deckList.value].cards[0].cloneNode(true);
+			newCard.addEventListener("touchstart", onCardDragStart, false);
+			newCard.addEventListener("mousedown", onCardDragStart, false);
+			newCard.style.left = deckRect.left;
+			newCard.style.top = deckRect.top;
+			cardBeingDragged = newCard;
+			body.appendChild(newCard);
+			dragOffsetX = evt.clientX - deckRect.left;
+			dragOffsetY = evt.clientY - deckRect.top;
+			document.onmouseup = onCardDragEnd;
+			document.onmousemove = onCardDragging;
 		}
+		currentDeck.addEventListener("touchstart", onDeckDragStart, false);
+		currentDeck.addEventListener("mousedown", onDeckDragStart, false);
 
 		let cardBeingDragged = 0;
 		let dragOffsetX = 0;
 		let dragOffsetY = 0;
-		function onDragStart(evt)
+		function onCardDragStart(evt)
 		{
 			evt = evt || window.event;
 			evt.preventDefault();
 			cardBeingDragged = evt.target;
 			dragOffsetX = evt.clientX - Number(cardBeingDragged.style.left.replace("px", ""));
 			dragOffsetY = evt.clientY - Number(cardBeingDragged.style.top.replace("px", ""));
-			document.onmouseup = onDragEnd;
-			document.onmousemove = onDragging;
-console.log("Drag started: " + evt.clientX + ", " + Number(cardBeingDragged.style.left.replace("px", "")));
+			document.onmouseup = onCardDragEnd;
+			document.onmousemove = onCardDragging;
 		}
-		function onDragging(evt)
+		function onCardDragging(evt)
 		{
 			evt = evt || window.event;
 			evt.preventDefault();
 			cardBeingDragged.style.left = evt.clientX - dragOffsetX;
 			cardBeingDragged.style.top = evt.clientY - dragOffsetY;
-console.log("Dragging: " + dragOffsetX + ", " + dragOffsetY);
 		}
-		function onDragEnd(evt)
+		function onCardDragEnd(evt)
 		{
 			document.onmouseup = null;
 			document.onmousemove = null;
-console.log("Drag ended");
 		}
 	</script>
 </html>
