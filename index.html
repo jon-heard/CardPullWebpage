@@ -34,6 +34,11 @@
 				cursor: move;
 				box-shadow: 3px 3px 5px rgba(0,0,0,.85);
 			}
+			.showAllCard
+			{
+				position: static;
+				margin: 0.25em;
+			}
 			.dragged
 			{
 				box-shadow: 20px 20px 10px rgba(0,0,0,.75);
@@ -51,9 +56,11 @@
 	<body>
 		<select id='deckList'></select> &nbsp;
 		<button id='btnClear'>Clear</button> &nbsp;
+		<button id='btnShowAll'>Show All</button> &nbsp;
 		<br/>
-		<canvas id='deckUi'></canvas>
+		<div><canvas id='deckUi'></canvas></div>
 		<span id='loadingUi'>Loading...</canvas>
+		<br/>
 	</body>
 
 	<script>
@@ -84,8 +91,7 @@
 		initLoadingUi();
 		function showLoadingUi()
 		{
-			let deckUiRect = deckUi.getBoundingClientRect();
-			loadingUi.style.height = deckUiRect.height;
+			loadingUi.style.height = deckUi.getBoundingClientRect().height;
 			loadingUi.style.display = "flex";
 		}
 		function hideLoadingUi()
@@ -119,6 +125,32 @@
 			while (cards[0])
 			{
 				cards[0].parentNode.removeChild(cards[0]);
+			}
+		});
+
+
+		//////////////
+		// SHOW ALL //
+		//////////////
+		document.getElementById("btnShowAll").addEventListener("click", function()
+		{
+			let deck = decks[deckList.value];
+			let newCards = [];
+			for (var i = 0; i < deck.cards.length; i++)
+			{
+				let card = createCard(deck, i);
+				card.classList.add("showAllCard");
+				newCards.push(card);
+			}
+			for (var i = 0; i < newCards.length; i++)
+			{
+				let rect = newCards[i].getBoundingClientRect();
+				newCards[i].style.left = rect.left;
+				newCards[i].style.top = rect.top;
+			}
+			for (var i = 0; i < newCards.length; i++)
+			{
+				newCards[i].classList.remove("showAllCard");
 			}
 		});
 
@@ -194,30 +226,16 @@
 			evt = evt || window.event;
 			evt.preventDefault();
 			let deck = decks[deckList.value];
-			if (!deck.loaded)
+			let card = createCard(deck, Math.floor(Math.random() * deck.cards.length));
+			if (!card)
 			{
 				return;
 			}
 			let deckUiRect = deckUi.getBoundingClientRect();
-			let cardIndex = Math.floor(Math.random() * deck.cards.length);
-			let srcCanvas = deck.images[deck.cards[cardIndex][0]];
+			card.style.left = deckUiRect.left;
+			card.style.top = deckUiRect.top;
 
-			let newCard = document.createElement("CANVAS");
-			newCard.width = deck.w;
-			newCard.height = deck.h;
-			newCard.getContext("2d").drawImage(srcCanvas, deck.cards[cardIndex][1], deck.cards[cardIndex][2], deck.w, deck.h, 0, 0, deck.w, deck.h);
-			newCard.style.width = cardSize + "em";
-			newCard.classList.add("card");
-			newCard.addEventListener("touchstart", onCardDragStart);
-			newCard.addEventListener("mousedown", onCardDragStart);
-			newCard.addEventListener("mousemove", onHover);
-			newCard.addEventListener("mouseleave", onUnhover);
-			newCard.addEventListener("dblclick", onDoubleClick);
-			newCard.style.left = deckUiRect.left;
-			newCard.style.top = deckUiRect.top;
-			body.appendChild(newCard);
-
-			cardBeingDragged = newCard;
+			cardBeingDragged = card;
 			cardBeingDragged.classList.add("dragged");
 			dragOffsetX = evt.clientX - deckUiRect.left;
 			dragOffsetY = evt.clientY - deckUiRect.top;
@@ -226,6 +244,27 @@
 		}
 		deckUi.addEventListener("touchstart", onDeckDrag);
 		deckUi.addEventListener("mousedown", onDeckDrag);
+		function createCard(deck, index)
+		{
+			if (!deck.loaded)
+			{
+				return null;
+			}
+			let srcCanvas = deck.images[deck.cards[index][0]];
+			let newCard = document.createElement("CANVAS");
+			newCard.width = deck.w;
+			newCard.height = deck.h;
+			newCard.getContext("2d").drawImage(srcCanvas, deck.cards[index][1], deck.cards[index][2], deck.w, deck.h, 0, 0, deck.w, deck.h);
+			newCard.style.width = cardSize + "em";
+			newCard.classList.add("card");
+			newCard.addEventListener("touchstart", onCardDragStart);
+			newCard.addEventListener("mousedown", onCardDragStart);
+			newCard.addEventListener("mousemove", onHover);
+			newCard.addEventListener("mouseleave", onUnhover);
+			newCard.addEventListener("dblclick", onDoubleClick);
+			body.appendChild(newCard);
+			return newCard;
+		}
 
 
 		////////////////////

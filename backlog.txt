@@ -1,5 +1,6 @@
-add way to see all cards at once (to test new decks)
-	fantasy in particular seems broken
+put zoom position at top of current screen scroll
+fix bug where you can't zoom multiple times without moving mouse
+
 add flag to disallow duplicates (both in deck data and as checkbox)
 add flag to have flipped cards
 different zoom levels?
