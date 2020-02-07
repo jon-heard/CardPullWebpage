@@ -1,3 +1,4 @@
-add flag to disallow duplicates (both in deck data and as checkbox)
+fix doubleclick removal
+
 add flag to have flipped cards
 different zoom levels?

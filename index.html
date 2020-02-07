@@ -22,10 +22,9 @@
 			{
 				position: absolute;
 				cursor: not-allowed;
-				display: flex;
-				justify-content: center;
-				align-items: center;
+				text-align: center;
 				user-select: none;
+				display: none;
 			}
 			.card
 			{
@@ -58,9 +57,10 @@
 		<select id='deckList'></select> &nbsp;
 		<button id='btnClear'>Clear</button> &nbsp;
 		<button id='btnShowAll'>Show All</button> &nbsp;
+		<input type='checkbox' id='chkNoRedraw'>No redraw</button> &nbsp;
 		<br/>
-		<div><canvas id='deckUi'></canvas></div>
-		<span id='loadingUi'>Loading...</canvas>
+		<div><canvas id='deckUi' style='cursor: inherit;'></canvas></div>
+		<div id='loadingUi'><div>Loading...</div><div id='loadCounter'>3/4</div></div>
 		<br/>
 	</body>
 
@@ -93,28 +93,12 @@
 		function showLoadingUi()
 		{
 			loadingUi.style.height = deckUi.getBoundingClientRect().height;
-			loadingUi.style.display = "flex";
+			loadingUi.style.display = "inherit";
 		}
 		function hideLoadingUi()
 		{
 			loadingUi.style.display = "none";
 		}
-
-
-		///////////////////
-		// LIST OF DECKS //
-		///////////////////
-		var deckList = document.getElementById("deckList");
-		for (var i = 0; i < decks.length; i++)
-		{
-			deckList.innerHTML += "<option value='" + i + "'>" + decks[i].name + "</option>";
-		}
-		function onDeckSelected()
-		{
-			loadDeck(decks[deckList.value]);
-		}
-		deckList.addEventListener("change", onDeckSelected);
-		onDeckSelected();
 
 
 		//////////////////
@@ -127,6 +111,7 @@
 			{
 				cards[0].parentNode.removeChild(cards[0]);
 			}
+			cardList = {};
 		});
 
 
@@ -139,7 +124,7 @@
 			let newCards = [];
 			for (var i = 0; i < deck.cards.length; i++)
 			{
-				let card = createCard(deck, i);
+				let card = createCard(deckList.value, i);
 				card.classList.add("showAllCard");
 				newCards.push(card);
 			}
@@ -156,7 +141,9 @@
 		});
 
 
-		// Load image into a canvas
+		//////////////////////////////////////
+		// LOAD IMAGE FROM DATA INTO CANVAS //
+		//////////////////////////////////////
 		function loadImage(parentObject, property, onDone)
 		{
 			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
@@ -180,7 +167,9 @@
 		}
 
 
-		// Called when user sets the current deck
+		///////////////////////////////////////////
+		// LOAD DECK WHEN USER SETS CURRENT DECK //
+		///////////////////////////////////////////
 		function loadDeck(deck)
 		{
 			// If deck was previously loaded, just set it and return
@@ -189,6 +178,7 @@
 				deckUi.width = deck.backImage.width;
 				deckUi.height = deck.backImage.height;
 				deckUi.getContext("2d").drawImage(deck.backImage, 0, 0);
+				chkNoRedraw.checked = deck.noRedraw;
 				return;
 			}
 
@@ -197,11 +187,13 @@
 			deckUi.getContext("2d").clearRect(0, 0, deckUi.width, deckUi.height);
 			// Load the deck
 			let countdown = deck.images.length;
+			updateLoadCounter(countdown, deck.images.length);
 			for (var i = 0; i < deck.images.length; i++)
 			{
 				loadImage(deck.images, i, function(img)
 				{
 					countdown--;
+					updateLoadCounter(countdown, deck.images.length);					
 					if (countdown == 0)
 					{
 						deck.loaded = true;
@@ -211,23 +203,71 @@
 							deckUi.width = img.width;
 							deckUi.height = img.height;
 							deckUi.getContext("2d").drawImage(img, 0, 0);
+							chkNoRedraw.checked = deck.noRedraw;
 							hideLoadingUi();
 						});
 					}
 				});
 			}
 		}
+		let loadCounter = document.getElementById("loadCounter");
+		function updateLoadCounter(countdown, toLoadCount)
+		{
+			loadCounter.innerHTML = (toLoadCount-countdown) + "/" + toLoadCount;
+		}
+
+
+		///////////////////
+		// LIST OF DECKS //
+		///////////////////
+		var deckList = document.getElementById("deckList");
+		deckList.innerHTML += "<option value='-1'>--choose a deck--</option>";
+		for (var i = 0; i < decks.length; i++)
+		{
+			deckList.innerHTML += "<option value='" + i + "'>" + decks[i].name + "</option>";
+		}
+		function onDeckSelected()
+		{
+			if (deckList.value != -1)
+			{
+				deckUi.style.cursor = "";
+				loadDeck(decks[deckList.value]);
+			}
+			else
+			{
+				deckUi.style.cursor = "inherit";
+				deckUi.getContext("2d").clearRect(0, 0, deckUi.width, deckUi.height);
+			}
+		}
+		deckList.addEventListener("change", onDeckSelected);
 
 
 		//////////////////////////////////
-		// Create card by dragging deck //
+		// CREATE CARD BY DRAGGING DECK //
 		//////////////////////////////////
+		let chkNoRedraw = document.getElementById("chkNoRedraw");
+		let cardList = {};
 		function onDeckDrag(evt)
 		{
 			evt = evt || window.event;
 			evt.preventDefault();
-			let deck = decks[deckList.value];
-			let card = createCard(deck, Math.floor(Math.random() * deck.cards.length));
+			let deckIndex = deckList.value;
+			if (deckIndex == -1) // Don't allow dragging from non-deck
+			{
+				return;
+			}
+			let cardIndex = 0;
+			do
+			{
+				cardIndex = Math.floor(Math.random() * decks[deckIndex].cards.length);
+			}
+			while (
+				chkNoRedraw.checked &&   // Only loop if "no-redraw" flag is checked
+				cardList.hasOwnProperty(deckIndex) &&  // Current deck has cards
+				Object.keys(cardList[deckIndex]).length < decks[deckIndex].cards.length &&   // unused cards?
+				cardList[deckIndex].hasOwnProperty(cardIndex)   // Current cardIndex already used
+			);
+			let card = createCard(deckIndex, cardIndex);
 			if (!card)
 			{
 				return;
@@ -245,20 +285,23 @@
 		}
 		deckUi.addEventListener("touchstart", onDeckDrag);
 		deckUi.addEventListener("mousedown", onDeckDrag);
-		function createCard(deck, index)
+		function createCard(deckIndex, cardIndex)
 		{
+			let deck = decks[deckIndex];
 			if (!deck.loaded)
 			{
 				return null;
 			}
-			let srcCanvas = deck.images[deck.cards[index][0]];
+			let srcCanvas = deck.images[deck.cards[cardIndex][0]];
 			let newCard = document.createElement("CANVAS");
+			newCard.dataset.deckIndex = deckIndex;
+			newCard.dataset.cardIndex = cardIndex;
 			newCard.width = deck.w;
 			newCard.height = deck.h;
 			newCard.getContext("2d").drawImage(
 				srcCanvas,
-				deck.cards[index][1],
-				deck.cards[index][2],
+				deck.cards[cardIndex][1],
+				deck.cards[cardIndex][2],
 				deck.w, deck.h,
 				0, 0,
 				deck.w, deck.h);
@@ -270,12 +313,14 @@
 			newCard.addEventListener("mouseleave", onUnhover);
 			newCard.addEventListener("dblclick", onDoubleClick);
 			body.appendChild(newCard);
+			if (!cardList.hasOwnProperty(deckIndex)) { cardList[deckIndex] = {}; }
+			cardList[deckIndex][cardIndex] = true;
 			return newCard;
 		}
 
 
 		////////////////////
-		// Dragging cards //
+		// DRAGGING CARDS //
 		////////////////////
 		let cardBeingDragged = 0;
 		let dragOffsetX = 0;
@@ -353,11 +398,13 @@
 
 
 		///////////////////
-		// Card deletion //
+		// CARD DELETION //
 		///////////////////
 		function onDoubleClick(evt)
 		{
-			evt.target.remove();
+			let card = evt.target;
+			cardList[card.dataset.deckIndex][card.dataset.cardIndex] = false;
+			card.remove();
 		}
 	</script>
 </html>

@@ -161,6 +161,7 @@ for (var i = 0; i < 5; i++)
 {
 	for (var k = 0; k < 5; k++)
 	{
+		if (i == 0 && k == 0) { continue; }
 		d.cards.push([0, i * d.w, k * d.h]);
 	}
 }
