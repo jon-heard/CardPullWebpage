@@ -1,4 +1,3 @@
 fix doubleclick removal
 
-add flag to have flipped cards
 different zoom levels?

@@ -58,6 +58,7 @@
 		<button id='btnClear'>Clear</button> &nbsp;
 		<button id='btnShowAll'>Show All</button> &nbsp;
 		<input type='checkbox' id='chkNoRedraw'>No redraw</button> &nbsp;
+		<input type='checkbox' id='chkAllowFlipped'>Allow flipped</button> &nbsp;
 		<br/>
 		<div><canvas id='deckUi' style='cursor: inherit;'></canvas></div>
 		<div id='loadingUi'><div>Loading...</div><div id='loadCounter'>3/4</div></div>
@@ -179,6 +180,7 @@
 				deckUi.height = deck.backImage.height;
 				deckUi.getContext("2d").drawImage(deck.backImage, 0, 0);
 				chkNoRedraw.checked = deck.noRedraw;
+				chkAllowFlipped.checked = deck.allowFlipped;
 				return;
 			}
 
@@ -204,6 +206,7 @@
 							deckUi.height = img.height;
 							deckUi.getContext("2d").drawImage(img, 0, 0);
 							chkNoRedraw.checked = deck.noRedraw;
+							chkAllowFlipped.checked = deck.allowFlipped;
 							hideLoadingUi();
 						});
 					}
@@ -246,6 +249,7 @@
 		// CREATE CARD BY DRAGGING DECK //
 		//////////////////////////////////
 		let chkNoRedraw = document.getElementById("chkNoRedraw");
+		let chkAllowFlipped = document.getElementById("chkAllowFlipped");
 		let cardList = {};
 		function onDeckDrag(evt)
 		{
@@ -267,7 +271,12 @@
 				Object.keys(cardList[deckIndex]).length < decks[deckIndex].cards.length &&   // unused cards?
 				cardList[deckIndex].hasOwnProperty(cardIndex)   // Current cardIndex already used
 			);
-			let card = createCard(deckIndex, cardIndex);
+			let flipped = false;
+			if (chkAllowFlipped.checked)
+			{
+				flipped = (Math.random() > 0.5);
+			}
+			let card = createCard(deckIndex, cardIndex, flipped);
 			if (!card)
 			{
 				return;
@@ -285,7 +294,7 @@
 		}
 		deckUi.addEventListener("touchstart", onDeckDrag);
 		deckUi.addEventListener("mousedown", onDeckDrag);
-		function createCard(deckIndex, cardIndex)
+		function createCard(deckIndex, cardIndex, flipped)
 		{
 			let deck = decks[deckIndex];
 			if (!deck.loaded)
@@ -298,13 +307,24 @@
 			newCard.dataset.cardIndex = cardIndex;
 			newCard.width = deck.w;
 			newCard.height = deck.h;
-			newCard.getContext("2d").drawImage(
+			let newCardCtx = newCard.getContext("2d");
+			if (flipped)
+			{
+				newCardCtx.save();
+				newCardCtx.translate(deck.w, deck.h);
+				newCardCtx.scale(-1, -1);
+			}
+			newCardCtx.drawImage(
 				srcCanvas,
 				deck.cards[cardIndex][1],
 				deck.cards[cardIndex][2],
 				deck.w, deck.h,
 				0, 0,
 				deck.w, deck.h);
+			if (flipped)
+			{
+				newCardCtx.restore();
+			}
 			newCard.style.width = cardSize + "em";
 			newCard.classList.add("card");
 			newCard.addEventListener("touchstart", onCardDragStart);

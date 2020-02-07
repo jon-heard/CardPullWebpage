@@ -13,6 +13,8 @@ d = {
 	backImage: "tarot_back.jpg",
 	w: 551,
 	h: 945,
+	noRedraw: true,
+	allowFlipped: true,
 	cards: []
 };
 for (var i = 0; i < 10; i++)
@@ -41,6 +43,8 @@ d = {
 	backImage: "deckOfTales_back.png",
 	w: 825,
 	h: 1125,
+	noRedraw: false,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 10; i++)
@@ -72,6 +76,8 @@ d = {
 	backImage: "gmApprentice_back.png",
 	w: 825,
 	h: 1125,
+	noRedraw: false,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 10; i++)
@@ -128,6 +134,8 @@ d = {
 	backImage: "gmaFantasy/back.png",
 	w: 825,
 	h: 1125,
+	noRedraw: false,
+	allowFlipped: false,
 	cards: [
 		[  0, 0,0], [  1, 0,0], [  2, 0,0], [  3, 0,0], [  4, 0,0], [  5, 0,0], [  6, 0,0], [  7, 0,0], [  8, 0,0], [  9, 0,0],
 		[ 10, 0,0], [ 11, 0,0], [ 12, 0,0], [ 13, 0,0], [ 14, 0,0], [ 15, 0,0], [ 16, 0,0], [ 17, 0,0], [ 18, 0,0], [ 19, 0,0],
@@ -155,6 +163,8 @@ d = {
 	backImage: "mythulu_characters_back.jpg",
 	w: 825,
 	h: 1125,
+	noRedraw: true,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 5; i++)
@@ -177,6 +187,8 @@ d = {
 	backImage: "mythulu_elements_back.jpg",
 	w: 440,
 	h: 600,
+	noRedraw: true,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 5; i++)
@@ -198,6 +210,8 @@ d = {
 	backImage: "mythulu_habitats_back.jpg",
 	w: 825,
 	h: 1125,
+	noRedraw: true,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 5; i++)
@@ -219,6 +233,8 @@ d = {
 	backImage: "mythulu_elements_back.jpg",
 	w: 825,
 	h: 1125,
+	noRedraw: true,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 5; i++)
@@ -240,6 +256,8 @@ d = {
 	backImage: "mythulu_textures_back.jpg",
 	w: 825,
 	h: 1125,
+	noRedraw: true,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 5; i++)
@@ -261,6 +279,8 @@ d = {
 	backImage: "mythulu_traits_back.jpg",
 	w: 825,
 	h: 1125,
+	noRedraw: true,
+	allowFlipped: false,
 	cards: []
 };
 for (var i = 0; i < 5; i++)
