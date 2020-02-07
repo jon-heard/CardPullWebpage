@@ -32,6 +32,7 @@
 				display: inline-block;
 				cursor: move;
 				box-shadow: 3px 3px 5px rgba(0,0,0,.85);
+				border: 2px blue solid;
 			}
 			.showAllCard
 			{
@@ -285,12 +286,7 @@
 			card.style.left = deckUiRect.left;
 			card.style.top = deckUiRect.top;
 
-			cardBeingDragged = card;
-			cardBeingDragged.classList.add("dragged");
-			dragOffsetX = evt.clientX - deckUiRect.left;
-			dragOffsetY = evt.clientY - deckUiRect.top;
-			document.addEventListener("mouseup", onCardDragEnd);
-			document.addEventListener("mousemove", onCardDragging);
+			onCardDragStart({target: card, pageX: evt.pageX, pageY: evt.pageY, preventDefault: function(){}});
 		}
 		deckUi.addEventListener("touchstart", onDeckDrag);
 		deckUi.addEventListener("mousedown", onDeckDrag);
@@ -349,23 +345,27 @@
 			cardBeingDragged = evt.target;
 			cardBeingDragged.classList.add("dragged");
 			body.appendChild(cardBeingDragged);
-			dragOffsetX = evt.clientX - Number(cardBeingDragged.style.left.replace("px", ""));
-			dragOffsetY = evt.clientY - Number(cardBeingDragged.style.top.replace("px", ""));
+			dragOffsetX = evt.pageX - Number(cardBeingDragged.style.left.replace("px", ""));
+			dragOffsetY = evt.pageY - Number(cardBeingDragged.style.top.replace("px", ""));
 			document.addEventListener("mouseup", onCardDragEnd);
+			document.addEventListener("touchend", onCardDragEnd);
 			document.addEventListener("mousemove", onCardDragging);
+			document.addEventListener("touchmove", onCardDragging);
 		}
 		function onCardDragging(evt)
 		{
 			evt = evt || window.event;
 			evt.preventDefault();
-			cardBeingDragged.style.left = evt.clientX - dragOffsetX;
-			cardBeingDragged.style.top = evt.clientY - dragOffsetY;
+			cardBeingDragged.style.left = evt.pageX - dragOffsetX;
+			cardBeingDragged.style.top = evt.pageY - dragOffsetY;
 		}
 		function onCardDragEnd(evt)
 		{
 			cardBeingDragged.classList.remove("dragged");
 			document.removeEventListener("mouseup", onCardDragEnd);
+			document.removeEventListener("touchend", onCardDragEnd);
 			document.removeEventListener("mousemove", onCardDragging);
+			document.removeEventListener("touchmove", onCardDragging);
 		}
 
 
