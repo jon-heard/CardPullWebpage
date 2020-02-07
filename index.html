@@ -303,8 +303,6 @@
 			}
 			let srcCanvas = deck.images[deck.cards[cardIndex][0]];
 			let newCard = document.createElement("CANVAS");
-			newCard.dataset.deckIndex = deckIndex;
-			newCard.dataset.cardIndex = cardIndex;
 			newCard.width = deck.w;
 			newCard.height = deck.h;
 			let newCardCtx = newCard.getContext("2d");
@@ -331,7 +329,6 @@
 			newCard.addEventListener("mousedown", onCardDragStart);
 			newCard.addEventListener("mousemove", onHover);
 			newCard.addEventListener("mouseleave", onUnhover);
-			newCard.addEventListener("dblclick", onDoubleClick);
 			body.appendChild(newCard);
 			if (!cardList.hasOwnProperty(deckIndex)) { cardList[deckIndex] = {}; }
 			cardList[deckIndex][cardIndex] = true;
@@ -414,17 +411,6 @@
 			{
 				currentHovered = null;
 			}
-		}
-
-
-		///////////////////
-		// CARD DELETION //
-		///////////////////
-		function onDoubleClick(evt)
-		{
-			let card = evt.target;
-			cardList[card.dataset.deckIndex][card.dataset.cardIndex] = false;
-			card.remove();
 		}
 	</script>
 </html>
