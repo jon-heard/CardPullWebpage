@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script src='data.js'></script>
-		<script> let cardSize = 5; </script>
+		<script> const cardSize = 5; </script>
 		<style>
 			body
 			{
@@ -70,8 +70,8 @@
 		///////////////
 		// ERROR OUT //
 		///////////////
-		let errOut = document.getElementById("errOut");
-		//errOut.style.display = "inherit";
+		const errOut = document.getElementById("errOut");
+		// errOut.style.display = "inherit";
 		window.addEventListener('error', function(evt)
 		{
 			errOut.innerHTML = evt.errorno + " :: " + evt.message;
@@ -81,23 +81,23 @@
 		//////////
 		// BODY //
 		//////////
-		let body = document.getElementsByTagName("body")[0];
+		const body = document.getElementsByTagName("body")[0];
 
 
 		//////////////////
 		// DECK UI //
 		//////////////////
-		let deckUi = document.getElementById("deckUi");
+		const deckUi = document.getElementById("deckUi");
 		deckUi.style.width = cardSize + "em";
 
 
 		////////////////
 		// LOADING UI //
 		////////////////
-		let loadingUi = document.getElementById("loadingUi");
+		const loadingUi = document.getElementById("loadingUi");
 		function initLoadingUi() // Encapsulating for local scope for temp vars
 		{
-			let deckUiRect = deckUi.getBoundingClientRect();
+			const deckUiRect = deckUi.getBoundingClientRect();
 			loadingUi.style.left = deckUiRect.left;
 			loadingUi.style.top = deckUiRect.top;
 			loadingUi.style.width = deckUiRect.width;
@@ -119,7 +119,7 @@
 		//////////////////
 		document.getElementById("btnClear").addEventListener("click", function()
 		{
-			let cards = document.getElementsByClassName("card");
+			const cards = document.getElementsByClassName("card");
 			while (cards[0])
 			{
 				cards[0].parentNode.removeChild(cards[0]);
@@ -133,17 +133,17 @@
 		//////////////
 		document.getElementById("btnShowAll").addEventListener("click", function()
 		{
-			let deck = decks[deckList.value];
+			const deck = decks[deckList.value];
 			let newCards = [];
 			for (let i = 0; i < deck.cards.length; i++)
 			{
-				let card = createCard(deckList.value, i);
+				const card = createCard(deckList.value, i);
 				card.classList.add("showAllCard");
 				newCards.push(card);
 			}
 			for (let i = 0; i < newCards.length; i++)
 			{
-				let rect = newCards[i].getBoundingClientRect();
+				const rect = newCards[i].getBoundingClientRect();
 				newCards[i].style.left = rect.left;
 				newCards[i].style.top = rect.top;
 			}
@@ -157,7 +157,7 @@
 		//////////////////////////////////////
 		// LOAD IMAGE FROM DATA INTO CANVAS //
 		//////////////////////////////////////
-		let imageMargin = 10;
+		const imageMargin = 10;
 		function loadImage(parentObject, property, lowRes, onDone)
 		{
 			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
@@ -212,7 +212,7 @@
 			showLoadingUi();
 			deckUi.getContext("2d").clearRect(0, 0, deckUi.width, deckUi.height);
 			// Get hiRes flag to pick images
-			let lowRes = getQueryVariable("lowres");
+			const lowRes = getQueryVariable("lowres");
 			// Load the deck
 			let countdown = deck.images.length;
 			updateLoadCounter(countdown, deck.images.length);
@@ -241,7 +241,7 @@
 				});
 			}
 		}
-		let loadCounter = document.getElementById("loadCounter");
+		const loadCounter = document.getElementById("loadCounter");
 		function updateLoadCounter(countdown, toLoadCount)
 		{
 			loadCounter.innerHTML = (toLoadCount-countdown) + "/" + toLoadCount;
@@ -265,7 +265,7 @@
 		///////////////////
 		// LIST OF DECKS //
 		///////////////////
-		let deckList = document.getElementById("deckList");
+		const deckList = document.getElementById("deckList");
 		deckList.innerHTML += "<option value='-1'>--choose a deck--</option>";
 		for (let i = 0; i < decks.length; i++)
 		{
@@ -290,18 +290,25 @@
 		//////////////////////////////////
 		// CREATE CARD BY DRAGGING DECK //
 		//////////////////////////////////
-		let chkNoRedraw = document.getElementById("chkNoRedraw");
-		let chkAllowFlipped = document.getElementById("chkAllowFlipped");
+		const chkNoRedraw = document.getElementById("chkNoRedraw");
+		const chkAllowFlipped = document.getElementById("chkAllowFlipped");
 		let cardList = {};
 		function onDeckDrag(evt)
 		{
 			evt = evt || window.event;
-			evt.preventDefault();
-			let deckIndex = deckList.value;
-			if (deckIndex == -1) // Don't allow dragging from non-deck
+			if (evt.touches && evt.touches.length > 1) { return; } // only drag on single-finger touch
+			if (deckList.value == -1) // Don't allow dragging from non-deck
 			{
 				return;
 			}
+			evt.preventDefault();
+			onCardDragStart(evt);
+		}
+		deckUi.addEventListener("touchstart", onDeckDrag);
+		deckUi.addEventListener("mousedown", onDeckDrag);
+		function dragCreateCard()
+		{
+			const deckIndex = deckList.value;
 			let cardIndex = 0;
 			do
 			{
@@ -313,43 +320,33 @@
 				Object.keys(cardList[deckIndex]).length < decks[deckIndex].cards.length &&   // unused cards?
 				cardList[deckIndex].hasOwnProperty(cardIndex)   // Current cardIndex already used
 			);
-			let flipped = false;
-			if (chkAllowFlipped.checked)
+			const flipped = chkAllowFlipped.checked ? (Math.random() > 0.5) : false;
+			let result = createCard(deckIndex, cardIndex, flipped);
+			if (!result)
 			{
-				flipped = (Math.random() > 0.5);
+				return null;
 			}
-			let card = createCard(deckIndex, cardIndex, flipped);
-			if (!card)
-			{
-				return;
-			}
-			let deckUiRect = deckUi.getBoundingClientRect();
-			card.style.left = deckUiRect.left;
-			card.style.top = deckUiRect.top;
-
-			onCardDragStart({target: card, pageX: evt.pageX, pageY: evt.pageY, preventDefault: function(){}});
+			return result;
 		}
-		deckUi.addEventListener("touchstart", onDeckDrag);
-		deckUi.addEventListener("mousedown", onDeckDrag);
 		function createCard(deckIndex, cardIndex, flipped)
 		{
-			let deck = decks[deckIndex];
+			const deck = decks[deckIndex];
 			if (!deck.loaded)
 			{
 				return null;
 			}
-			let srcCanvas = deck.images[deck.cards[cardIndex][0]];
-			let newCard = document.createElement("CANVAS");
-			newCard.width = deck.w;
-			newCard.height = deck.h;
-			let newCardCtx = newCard.getContext("2d");
+			const srcCanvas = deck.images[deck.cards[cardIndex][0]];
+			let result = document.createElement("CANVAS");
+			result.width = deck.w;
+			result.height = deck.h;
+			let resultCtx = result.getContext("2d");
 			if (flipped)
 			{
-				newCardCtx.save();
-				newCardCtx.translate(deck.w, deck.h);
-				newCardCtx.scale(-1, -1);
+				resultCtx.save();
+				resultCtx.translate(deck.w, deck.h);
+				resultCtx.scale(-1, -1);
 			}
-			newCardCtx.drawImage(
+			resultCtx.drawImage(
 				srcCanvas,
 				deck.cards[cardIndex][1] * deck.w,
 				deck.cards[cardIndex][2] * deck.h,
@@ -358,36 +355,43 @@
 				deck.w, deck.h);
 			if (flipped)
 			{
-				newCardCtx.restore();
+				resultCtx.restore();
 			}
-			newCard.style.width = cardSize + "em";
-			newCard.classList.add("card");
-			newCard.addEventListener("touchstart", onCardDragStart);
-			newCard.addEventListener("mousedown", onCardDragStart);
-			newCard.addEventListener("mousemove", onHover);
-			newCard.addEventListener("mouseleave", onUnhover);
-			body.appendChild(newCard);
+			result.style.width = cardSize + "em";
+			result.classList.add("card");
+			result.addEventListener("touchstart", onCardDragStart);
+			result.addEventListener("mousedown", onCardDragStart);
+			result.addEventListener("mousemove", onHover);
+			result.addEventListener("mouseleave", onUnhover);
+			body.appendChild(result);
 			if (!cardList.hasOwnProperty(deckIndex)) { cardList[deckIndex] = {}; }
 			cardList[deckIndex][cardIndex] = true;
-			return newCard;
+			return result;
 		}
 
 
 		////////////////////
 		// DRAGGING CARDS //
 		////////////////////
+		const dragSnap = 25.0;
 		let cardBeingDragged = 0;
 		let dragOffsetX = 0;
 		let dragOffsetY = 0;
+		let dragStartX = 0; // dragStart lets us reset dragged card's position if canceled
+		let dragStartY = 0;
+		let isDragging = false;
+		let isDragCreating = false;
 		function onCardDragStart(evt)
 		{
 			evt = evt || window.event;
+			if (evt.touches && evt.touches.length > 1) { return; } // only drag on single-finger touch
 			evt.preventDefault();
+			isDragCreating = (evt.target == deckUi);
 			cardBeingDragged = evt.target;
-			cardBeingDragged.classList.add("dragged");
-			body.appendChild(cardBeingDragged);
-			dragOffsetX = evt.pageX - Number(cardBeingDragged.style.left.replace("px", ""));
-			dragOffsetY = evt.pageY - Number(cardBeingDragged.style.top.replace("px", ""));
+			dragStartX = evt.pageX;
+			dragStartY = evt.pageY;
+			dragOffsetX = evt.pageX - cardBeingDragged.offsetLeft;
+			dragOffsetY = evt.pageY - cardBeingDragged.offsetTop;
 			document.addEventListener("mouseup", onCardDragEnd);
 			document.addEventListener("touchend", onCardDragEnd);
 			document.addEventListener("mousemove", onCardDragging);
@@ -396,13 +400,45 @@
 		function onCardDragging(evt)
 		{
 			evt = evt || window.event;
-			evt.preventDefault();
-			cardBeingDragged.style.left = evt.pageX - dragOffsetX;
-			cardBeingDragged.style.top = evt.pageY - dragOffsetY;
+			if (evt.touches && evt.touches.length > 1) // only drag on single-finger touch
+			{
+				if (isDragging)
+				{
+					cardBeingDragged.style.left = dragStartX;
+					cardBeingDragged.style.top = dragStartY;
+				}
+				return onCardDragEnd(evt);
+			}
+			if (!isDragging)
+			{
+				if (Math.hypot(evt.pageX - dragStartX, evt.pageY - dragStartY) > dragSnap)
+				{
+					if (isDragCreating) { cardBeingDragged = dragCreateCard(); }
+					if (!cardBeingDragged)
+					{
+						return onCardDragEnd(evt);
+					}
+					isDragging = true;
+					dragStartX = cardBeingDragged.style.left;
+					dragStartY = cardBeingDragged.style.top;
+					cardBeingDragged.classList.add("dragged");
+					body.appendChild(cardBeingDragged);
+				}
+			}
+			if (isDragging)
+			{
+				evt.preventDefault();
+				cardBeingDragged.style.left = evt.pageX - dragOffsetX;
+				cardBeingDragged.style.top = evt.pageY - dragOffsetY;
+			}
 		}
 		function onCardDragEnd(evt)
 		{
-			cardBeingDragged.classList.remove("dragged");
+			isDragging = false;
+			if (cardBeingDragged)
+			{
+				cardBeingDragged.classList.remove("dragged");
+			}
 			document.removeEventListener("mouseup", onCardDragEnd);
 			document.removeEventListener("touchend", onCardDragEnd);
 			document.removeEventListener("mousemove", onCardDragging);
