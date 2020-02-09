@@ -7,6 +7,9 @@
 			{
 				background-color: black;
 				color: white;
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+				background-position: bottom right;
 			}
 			#deckList
 			{
@@ -50,7 +53,7 @@
 			#zoomUi
 			{
 				position: fixed;
-				left: 0;
+				right: 0;
 				top: 0;
 				height: 100%;
 				z-index: 100;
@@ -60,7 +63,8 @@
 	</head>
 
 	<body>
-		<select id='deckList'></select> &nbsp;
+		<select id='deckList'><option value='-1'>--choose a deck--</option></select> &nbsp;
+		<select id='refList'><option value=''>--No references--</option></select> &nbsp;
 		<input type='checkbox' id='chkZoom'>Zoom</button> &nbsp;
 		<button id='btnClear'>Clear</button> &nbsp;
 		<input type='checkbox' id='chkNoRedraw'>No redraw</button> &nbsp;
@@ -213,6 +217,7 @@
 				deckUi.getContext("2d").drawImage(deck.backImage, 0, 0);
 				chkNoRedraw.checked = deck.noRedraw;
 				chkAllowFlipped.checked = deck.allowFlipped;
+				updateRefList(deck);
 				return;
 			}
 
@@ -222,6 +227,7 @@
 			// Get hiRes flag to pick images
 			const hires = getQueryVariable("hires");
 			// Load the deck
+			btnShowAll.enabled = false;
 			let countdown = deck.images.length;
 			updateLoadCounter(countdown, deck.images.length);
 			deck.w = hires ? deck.hiW : deck.lowW;
@@ -243,6 +249,8 @@
 							deckUi.getContext("2d").drawImage(img, 0, 0);
 							chkNoRedraw.checked = deck.noRedraw;
 							chkAllowFlipped.checked = deck.allowFlipped;
+							updateRefList(deck);
+							btnShowAll.enabled = true;
 							hideLoadingUi();
 						});
 					}
@@ -254,19 +262,35 @@
 		{
 			loadCounter.innerHTML = (toLoadCount-countdown) + "/" + toLoadCount;
 		}
-		function getQueryVariable(variable)
+		function getQueryVariable(name)
 		{
 			let query = window.location.search.substring(1);
 			let vars = query.split("&");
 			for (let i = 0; i < vars.length; i++)
 			{
 				let pair = vars[i].split("=");
-				if (pair[0] == variable)
+				if (pair[0] == name)
 				{
 					return pair[1];
 				}
 			}
 			return(false);
+		}
+		function updateRefList(deck)
+		{
+			body.style["background-image"] = "";
+			if (Object.keys(deck.refImages).length == 0)
+			{
+				refList.innerHTML = "<option value=''>--No references--</option>";
+			}
+			else
+			{
+				refList.innerHTML = "<option value=''>--View a reference--</option>";
+				for (let key in deck.refImages)
+				{
+					refList.innerHTML += "<option value='" + deck.refImages[key] + "'>" + key + "</option>";
+				}
+			}
 		}
 
 
@@ -274,7 +298,6 @@
 		// LIST OF DECKS //
 		///////////////////
 		const deckList = document.getElementById("deckList");
-		deckList.innerHTML += "<option value='-1'>--choose a deck--</option>";
 		for (let i = 0; i < decks.length; i++)
 		{
 			deckList.innerHTML += "<option value='" + i + "'>" + decks[i].name + "</option>";
@@ -290,9 +313,21 @@
 			{
 				deckUi.style.cursor = "inherit";
 				deckUi.getContext("2d").clearRect(0, 0, deckUi.width, deckUi.height);
+				refList.innerHTML = "<option value=''>--No references--</option>";
 			}
 		}
 		deckList.addEventListener("change", onDeckSelected);
+
+
+		////////////////////////
+		// LIST OF REFERENCES //
+		////////////////////////
+		const refList = document.getElementById("refList");
+		function onRefSelected()
+		{
+			body.style["background-image"] = "url(media/" + refList.value + ")";
+		}
+		refList.addEventListener("change", onRefSelected);
 
 
 		//////////////////////////////////
@@ -503,7 +538,7 @@
 		});
 		document.addEventListener("mousemove", function(evt)
 		{
-			if (evt.pageX < zoomUi.offsetWidth)
+			if (evt.pageX > body.offsetWidth - zoomUi.offsetWidth)
 			{
 				lastMoveTime = Date.now();
 				zoomUi.style.opacity = zoomUiMovingOpacity + "%";

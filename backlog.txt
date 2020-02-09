@@ -1,1 +1,2 @@
-add reference image dropdown to set background to given reference image
+add references for mythulu generators AND gma AND deck of tales
+get zoom working on iphone when holding mouse over spot and haven't started dragging
