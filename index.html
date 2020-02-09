@@ -32,7 +32,6 @@
 				display: inline-block;
 				cursor: move;
 				box-shadow: 3px 3px 5px rgba(0,0,0,.85);
-				border: 2px blue solid;
 			}
 			.showAllCard
 			{
@@ -63,27 +62,39 @@
 		<br/>
 		<div><canvas id='deckUi' style='cursor: inherit;'></canvas></div>
 		<div id='loadingUi'><div>Loading...</div><div id='loadCounter'>3/4</div></div>
+		<textarea id='errOut' style='display: none; width: 100%;'></textarea>
 		<br/>
 	</body>
 
 	<script>
+		///////////////
+		// ERROR OUT //
+		///////////////
+		let errOut = document.getElementById("errOut");
+		//errOut.style.display = "inherit";
+		window.addEventListener('error', function(evt)
+		{
+			errOut.innerHTML = evt.errorno + " :: " + evt.message;
+			console.log(evt);
+		});
+
 		//////////
 		// BODY //
 		//////////
-		var body = document.getElementsByTagName("body")[0];
+		let body = document.getElementsByTagName("body")[0];
 
 
 		//////////////////
 		// DECK UI //
 		//////////////////
-		var deckUi = document.getElementById("deckUi");
+		let deckUi = document.getElementById("deckUi");
 		deckUi.style.width = cardSize + "em";
 
 
 		////////////////
 		// LOADING UI //
 		////////////////
-		var loadingUi = document.getElementById("loadingUi");
+		let loadingUi = document.getElementById("loadingUi");
 		function initLoadingUi() // Encapsulating for local scope for temp vars
 		{
 			let deckUiRect = deckUi.getBoundingClientRect();
@@ -108,7 +119,7 @@
 		//////////////////
 		document.getElementById("btnClear").addEventListener("click", function()
 		{
-			var cards = document.getElementsByClassName("card");
+			let cards = document.getElementsByClassName("card");
 			while (cards[0])
 			{
 				cards[0].parentNode.removeChild(cards[0]);
@@ -124,19 +135,19 @@
 		{
 			let deck = decks[deckList.value];
 			let newCards = [];
-			for (var i = 0; i < deck.cards.length; i++)
+			for (let i = 0; i < deck.cards.length; i++)
 			{
 				let card = createCard(deckList.value, i);
 				card.classList.add("showAllCard");
 				newCards.push(card);
 			}
-			for (var i = 0; i < newCards.length; i++)
+			for (let i = 0; i < newCards.length; i++)
 			{
 				let rect = newCards[i].getBoundingClientRect();
 				newCards[i].style.left = rect.left;
 				newCards[i].style.top = rect.top;
 			}
-			for (var i = 0; i < newCards.length; i++)
+			for (let i = 0; i < newCards.length; i++)
 			{
 				newCards[i].classList.remove("showAllCard");
 			}
@@ -146,21 +157,33 @@
 		//////////////////////////////////////
 		// LOAD IMAGE FROM DATA INTO CANVAS //
 		//////////////////////////////////////
-		function loadImage(parentObject, property, onDone)
+		let imageMargin = 10;
+		function loadImage(parentObject, property, lowRes, onDone)
 		{
 			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
 			{
-				let image = new Image();
-				image.addEventListener("load", function()
+				let srcImg = new Image();
+
+				// Once image loaded, add to data structure
+				srcImg.addEventListener("load", function()
 				{
-					let canvas = document.createElement("CANVAS");
-					canvas.width = image.width;
-					canvas.height = image.height;
-					canvas.getContext("2d").drawImage(image, 0, 0);
-					parentObject[property] = canvas;
-					if (onDone) { onDone(canvas); }
+					let result = document.createElement("CANVAS");
+					result.width = srcImg.width + imageMargin;
+					result.height = srcImg.height + imageMargin;
+					result.getContext("2d").drawImage(srcImg, 0, 0);
+					parentObject[property] = result;
+					if (onDone) { onDone(result); }
 				});
-				image.src = "media/" + parentObject[property];
+
+				// Add 'hi_' or 'low_' prefix to imagename
+				let prefixPosition = parentObject[property].lastIndexOf("/") + 1;
+				parentObject[property] =
+					parentObject[property].slice(0, prefixPosition) +
+					(lowRes ? "low_" : "hi_") +
+					parentObject[property].slice(prefixPosition);
+
+				// Load the image
+				srcImg.src = "media/" + parentObject[property];
 			}
 			else
 			{
@@ -177,8 +200,8 @@
 			// If deck was previously loaded, just set it and return
 			if (deck.loaded)
 			{
-				deckUi.width = deck.backImage.width;
-				deckUi.height = deck.backImage.height;
+				deckUi.width = deck.backImage.width - imageMargin;
+				deckUi.height = deck.backImage.height - imageMargin;
 				deckUi.getContext("2d").drawImage(deck.backImage, 0, 0);
 				chkNoRedraw.checked = deck.noRedraw;
 				chkAllowFlipped.checked = deck.allowFlipped;
@@ -188,12 +211,16 @@
 			// Disable deckUi while loading the deck
 			showLoadingUi();
 			deckUi.getContext("2d").clearRect(0, 0, deckUi.width, deckUi.height);
+			// Get hiRes flag to pick images
+			let lowRes = getQueryVariable("lowres");
 			// Load the deck
 			let countdown = deck.images.length;
 			updateLoadCounter(countdown, deck.images.length);
-			for (var i = 0; i < deck.images.length; i++)
+			deck.w = lowRes ? deck.lowW : deck.hiW;
+			deck.h = lowRes ? deck.lowH : deck.hiH;
+			for (let i = 0; i < deck.images.length; i++)
 			{
-				loadImage(deck.images, i, function(img)
+				loadImage(deck.images, i, lowRes, function(img)
 				{
 					countdown--;
 					updateLoadCounter(countdown, deck.images.length);					
@@ -201,10 +228,10 @@
 					{
 						deck.loaded = true;
 						// Enable DeckUi once all deck images are loaded
-						loadImage(deck, "backImage", function(img)
+						loadImage(deck, "backImage", lowRes, function(img)
 						{
-							deckUi.width = img.width;
-							deckUi.height = img.height;
+							deckUi.width = img.width - imageMargin;
+							deckUi.height = img.height - imageMargin;
 							deckUi.getContext("2d").drawImage(img, 0, 0);
 							chkNoRedraw.checked = deck.noRedraw;
 							chkAllowFlipped.checked = deck.allowFlipped;
@@ -219,14 +246,28 @@
 		{
 			loadCounter.innerHTML = (toLoadCount-countdown) + "/" + toLoadCount;
 		}
+		function getQueryVariable(variable)
+		{
+			let query = window.location.search.substring(1);
+			let vars = query.split("&");
+			for (let i = 0; i < vars.length; i++)
+			{
+				let pair = vars[i].split("=");
+				if (pair[0] == variable)
+				{
+					return pair[1];
+				}
+			}
+			return(false);
+		}
 
 
 		///////////////////
 		// LIST OF DECKS //
 		///////////////////
-		var deckList = document.getElementById("deckList");
+		let deckList = document.getElementById("deckList");
 		deckList.innerHTML += "<option value='-1'>--choose a deck--</option>";
-		for (var i = 0; i < decks.length; i++)
+		for (let i = 0; i < decks.length; i++)
 		{
 			deckList.innerHTML += "<option value='" + i + "'>" + decks[i].name + "</option>";
 		}
@@ -310,8 +351,8 @@
 			}
 			newCardCtx.drawImage(
 				srcCanvas,
-				deck.cards[cardIndex][1],
-				deck.cards[cardIndex][2],
+				deck.cards[cardIndex][1] * deck.w,
+				deck.cards[cardIndex][2] * deck.h,
 				deck.w, deck.h,
 				0, 0,
 				deck.w, deck.h);

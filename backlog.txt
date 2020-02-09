@@ -1,2 +1,4 @@
-get working on phone
-different zoom levels?
+don't drag on two finger touch
+have cards destroyed if dragged back onto the deck
+have zoomed card be uniquely id'd element that has card drawn into it on zoom
+fix zooming with no card beneath cursor

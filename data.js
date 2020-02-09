@@ -11,24 +11,29 @@ d = {
 	name: "Tarot",
 	images: ["tarot_1.png", "tarot_2.png"],
 	backImage: "tarot_back.jpg",
-	w: 551,
-	h: 945,
+	hiW: 551,
+	hiH: 945,
+	lowW: 138,
+	lowH: 236,
 	noRedraw: true,
 	allowFlipped: true,
 	cards: []
 };
-for (var i = 0; i < 10; i++)
+for (var i = 0; i < 6; i++)
 {
-	for (var k = 0; k < 6; k++)
+	for (var k = 0; k < 10; k++)
 	{
 		if (i == 0 && k == 0) { continue; } // skip first card
-		if (i > 6 && k == 5) { continue; }
-		d.cards.push([0, i * d.w, k * d.h]);
+		if (i == 5 && k > 6) { continue; }
+		d.cards.push([0, k, i]);
 	}
-	for (var k = 0; k < 3; k++)
+}
+for (var i = 0; i < 3; i++)
+{
+	for (var k = 0; k < 10; k++)
 	{
-		if (i > 1 && k == 2) { continue; }
-		d.cards.push([1, i * d.w, k * d.h]);
+		if (i == 2 && k > 1) { continue; }
+		d.cards.push([1, k, i]);
 	}
 }
 decks.push(d);
@@ -41,27 +46,35 @@ d = {
 	name: "Deck of Tales",
 	images: ["deckOfTales_1.png", "deckOfTales_2.png", "deckOfTales_3.png"],
 	backImage: "deckOfTales_back.png",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 206,
+	lowH: 281,
 	noRedraw: false,
 	allowFlipped: false,
 	cards: []
 };
-for (var i = 0; i < 10; i++)
+for (var i = 0; i < 4; i++)
 {
-	for (var k = 0; k < 4; k++)
+	for (var k = 0; k < 10; k++)
 	{
-		if (i < 4 && k == 0) { continue; } // skip first card
-		d.cards.push([0, i * d.w, k * d.h]);
+		if (i == 0 && k < 4) { continue; }
+		d.cards.push([0, k, i]);
 	}
-	for (var k = 0; k < 4; k++)
+}
+for (var i = 0; i < 4; i++)
+{
+	for (var k = 0; k < 10; k++)
 	{
-		d.cards.push([1, i * d.w, k * d.h]);
+		d.cards.push([1, k, i]);
 	}
-	for (var k = 0; k < 5; k++)
+}
+for (var i = 0; i < 5; i++)
+{
+	for (var k = 0; k < 10; k++)
 	{
-		if (i > 3 && k == 4) { continue; }
-		d.cards.push([2, i * d.w, k * d.h]);
+		if (i == 4 && k > 3) { continue; }
+		d.cards.push([2, k, i]);
 	}
 }
 decks.push(d);
@@ -74,27 +87,35 @@ d = {
 	name: "GM Apprentice",
 	images: ["gmApprentice_1.png", "gmApprentice_2.png", "gmApprentice_3.png"],
 	backImage: "gmApprentice_back.png",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 248,
+	lowH: 338,
 	noRedraw: false,
 	allowFlipped: false,
 	cards: []
 };
-for (var i = 0; i < 10; i++)
+for (var i = 0; i < 3; i++)
 {
-	for (var k = 0; k < 5; k++)
+	for (var k = 0; k < 10; k++)
 	{
-		if (i > 4 && k == 4) { continue; }
-		d.cards.push([0, i * d.w, k * d.h]);
+		d.cards.push([0, k, i]);
 	}
-	for (var k = 0; k < 5; k++)
+}
+for (var i = 0; i < 5; i++)
+{
+	for (var k = 0; k < 10; k++)
 	{
-		if (i > 4 && k == 4) { continue; }
-		d.cards.push([1, i * d.w, k * d.h]);
+		if (i == 4 && k > 4) { continue; }
+		d.cards.push([1, k, i]);
 	}
-	for (var k = 0; k < 3; k++)
+}
+for (var i = 0; i < 5; i++)
+{
+	for (var k = 0; k < 10; k++)
 	{
-		d.cards.push([1, i * d.w, k * d.h]);
+		if (i == 4 && k > 4) { continue; }
+		d.cards.push([2, k, i]);
 	}
 }
 decks.push(d);
@@ -132,8 +153,10 @@ d = {
 		"gmaFantasy/116.jpg", "gmaFantasy/117.jpg", "gmaFantasy/118.jpg", "gmaFantasy/119.jpg", "gmaFantasy/120.jpg",
 	],
 	backImage: "gmaFantasy/back.png",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
 	noRedraw: false,
 	allowFlipped: false,
 	cards: [
@@ -161,8 +184,10 @@ d = {
 	name: "Mythulu - characters",
 	images: ["mythulu_characters.png"],
 	backImage: "mythulu_characters_back.jpg",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
 	noRedraw: true,
 	allowFlipped: false,
 	cards: []
@@ -172,7 +197,7 @@ for (var i = 0; i < 5; i++)
 	for (var k = 0; k < 5; k++)
 	{
 		if (i == 0 && k == 0) { continue; }
-		d.cards.push([0, i * d.w, k * d.h]);
+		d.cards.push([0, k, i]);
 	}
 }
 decks.push(d);
@@ -185,8 +210,10 @@ d = {
 	name: "Mythulu - elements",
 	images: ["mythulu_elements.png"],
 	backImage: "mythulu_elements_back.jpg",
-	w: 440,
-	h: 600,
+	hiW: 440,
+	hiH: 600,
+	lowW: 264,
+	lowH: 360,
 	noRedraw: true,
 	allowFlipped: false,
 	cards: []
@@ -195,7 +222,7 @@ for (var i = 0; i < 5; i++)
 {
 	for (var k = 0; k < 5; k++)
 	{
-		d.cards.push([0, i * d.w, k * d.h]);
+		d.cards.push([0, k, i]);
 	}
 }
 decks.push(d);
@@ -208,8 +235,10 @@ d = {
 	name: "Mythulu - habitats",
 	images: ["mythulu_habitats.png"],
 	backImage: "mythulu_habitats_back.jpg",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
 	noRedraw: true,
 	allowFlipped: false,
 	cards: []
@@ -218,7 +247,7 @@ for (var i = 0; i < 5; i++)
 {
 	for (var k = 0; k < 5; k++)
 	{
-		d.cards.push([0, i * d.w, k * d.h]);
+		d.cards.push([0, k, i]);
 	}
 }
 decks.push(d);
@@ -231,8 +260,10 @@ d = {
 	name: "Mythulu - relationships",
 	images: ["mythulu_relationships.png"],
 	backImage: "mythulu_elements_back.jpg",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
 	noRedraw: true,
 	allowFlipped: false,
 	cards: []
@@ -241,7 +272,7 @@ for (var i = 0; i < 5; i++)
 {
 	for (var k = 0; k < 5; k++)
 	{
-		d.cards.push([0, i * d.w, k * d.h]);
+		d.cards.push([0, k, i]);
 	}
 }
 decks.push(d);
@@ -254,8 +285,10 @@ d = {
 	name: "Mythulu - textures",
 	images: ["mythulu_textures.png"],
 	backImage: "mythulu_textures_back.jpg",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
 	noRedraw: true,
 	allowFlipped: false,
 	cards: []
@@ -264,7 +297,7 @@ for (var i = 0; i < 5; i++)
 {
 	for (var k = 0; k < 5; k++)
 	{
-		d.cards.push([0, i * d.w, k * d.h]);
+		d.cards.push([0, k, i]);
 	}
 }
 decks.push(d);
@@ -277,8 +310,10 @@ d = {
 	name: "Mythulu - traits",
 	images: ["mythulu_traits.png"],
 	backImage: "mythulu_traits_back.jpg",
-	w: 825,
-	h: 1125,
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
 	noRedraw: true,
 	allowFlipped: false,
 	cards: []
@@ -287,7 +322,7 @@ for (var i = 0; i < 5; i++)
 {
 	for (var k = 0; k < 5; k++)
 	{
-		d.cards.push([0, i * d.w, k * d.h]);
+		d.cards.push([0, k, i]);
 	}
 }
 decks.push(d);
