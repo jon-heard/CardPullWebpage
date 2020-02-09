@@ -158,7 +158,7 @@
 		// LOAD IMAGE FROM DATA INTO CANVAS //
 		//////////////////////////////////////
 		const imageMargin = 10;
-		function loadImage(parentObject, property, lowRes, onDone)
+		function loadImage(parentObject, property, hiRes, onDone)
 		{
 			if (typeof parentObject[property] === 'string' || parentObject[property] instanceof String)
 			{
@@ -179,7 +179,7 @@
 				let prefixPosition = parentObject[property].lastIndexOf("/") + 1;
 				parentObject[property] =
 					parentObject[property].slice(0, prefixPosition) +
-					(lowRes ? "low_" : "hi_") +
+					(hiRes ? "hi_" : "low_") +
 					parentObject[property].slice(prefixPosition);
 
 				// Load the image
@@ -212,15 +212,15 @@
 			showLoadingUi();
 			deckUi.getContext("2d").clearRect(0, 0, deckUi.width, deckUi.height);
 			// Get hiRes flag to pick images
-			const lowRes = getQueryVariable("lowres");
+			const hires = getQueryVariable("hires");
 			// Load the deck
 			let countdown = deck.images.length;
 			updateLoadCounter(countdown, deck.images.length);
-			deck.w = lowRes ? deck.lowW : deck.hiW;
-			deck.h = lowRes ? deck.lowH : deck.hiH;
+			deck.w = hires ? deck.hiW : deck.lowW;
+			deck.h = hires ? deck.hiH : deck.lowH;
 			for (let i = 0; i < deck.images.length; i++)
 			{
-				loadImage(deck.images, i, lowRes, function(img)
+				loadImage(deck.images, i, hires, function(img)
 				{
 					countdown--;
 					updateLoadCounter(countdown, deck.images.length);					
@@ -228,7 +228,7 @@
 					{
 						deck.loaded = true;
 						// Enable DeckUi once all deck images are loaded
-						loadImage(deck, "backImage", lowRes, function(img)
+						loadImage(deck, "backImage", hires, function(img)
 						{
 							deckUi.width = img.width - imageMargin;
 							deckUi.height = img.height - imageMargin;

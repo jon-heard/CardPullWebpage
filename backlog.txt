@@ -1,4 +1,3 @@
 have cards destroyed if dragged back onto the deck
-make low-res the default
 have zoomed card be uniquely id'd element that has card drawn into it on zoom
 fix zooming with no card beneath cursor
