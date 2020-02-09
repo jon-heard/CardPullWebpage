@@ -47,27 +47,30 @@
 				box-shadow: 0px 0px 50px white, 0px 0px 50px white;
 				filter: sepia(100%) saturate(300%) brightness(60%) hue-rotate(300deg);
 			}
-			.zoomed
+			#zoomUi
 			{
 				position: fixed;
 				left: 0;
 				top: 0;
 				height: 100%;
 				z-index: 100;
+				pointer-events: none;
 			}
 		</style>
 	</head>
 
 	<body>
 		<select id='deckList'></select> &nbsp;
+		<input type='checkbox' id='chkZoom'>Zoom</button> &nbsp;
 		<button id='btnClear'>Clear</button> &nbsp;
-		<button id='btnShowAll'>Show All</button> &nbsp;
 		<input type='checkbox' id='chkNoRedraw'>No redraw</button> &nbsp;
 		<input type='checkbox' id='chkAllowFlipped'>Allow flipped</button> &nbsp;
+		<button id='btnShowAll'>Show All</button> &nbsp;
 		<br/>
 		<div><canvas id='deckUi' style='cursor: inherit;'></canvas></div>
 		<div id='loadingUi'><div>Loading...</div><div id='loadCounter'>3/4</div></div>
 		<textarea id='errOut' style='display: none; width: 100%;'></textarea>
+		<canvas id='zoomUi' style='display: none;'></canvas>
 		<br/>
 	</body>
 
@@ -366,8 +369,8 @@
 			result.classList.add("card");
 			result.addEventListener("touchstart", onCardDragStart);
 			result.addEventListener("mousedown", onCardDragStart);
-			result.addEventListener("mousemove", onHover);
-			result.addEventListener("mouseleave", onUnhover);
+			result.addEventListener("mouseover", onHoverOverCard);
+			result.addEventListener("mouseout", onUnhoverFromCard);
 			body.appendChild(result);
 			if (!cardList.hasOwnProperty(deckIndex)) { cardList[deckIndex] = {}; }
 			cardList[deckIndex][cardIndex] = true;
@@ -473,44 +476,74 @@
 		//////////
 		// ZOOM //
 		//////////
+		const zoomUi = document.getElementById("zoomUi");
+		const chkZoom = document.getElementById("chkZoom");
+		const zoomUiMovingOpacity = 50;
 		let currentHovered = null;
-		let currentZoomed = null;
-		let currentZoomed_left = 0;
-		let currentZoomed_top = 0;
-		let currentZoomed_width = 0;
+		let lastMoveTime = 0;
 		document.addEventListener("keydown", function(evt)
 		{
-			if(evt.key == "Control" && currentHovered)
+			if(evt.key == "Control")
 			{
-				currentZoomed = currentHovered;
-				currentZoomed_left = currentZoomed.style.left;
-				currentZoomed_top = currentZoomed.style.top;
-				currentZoomed_width = currentZoomed.style.width;
-				currentZoomed.style.left = "";
-				currentZoomed.style.top = "";
-				currentZoomed.style.width = "";
-				currentZoomed.classList.add("zoomed");
+				chkZoom.checked = true;
+				updateZoomState();
 			}
 		});
 		document.addEventListener("keyup", function(evt)
 		{
-			if(evt.key == "Control" && currentZoomed)
+			if(evt.key == "Control")
 			{
-				currentZoomed.style.left = currentZoomed_left;
-				currentZoomed.style.top = currentZoomed_top;
-				currentZoomed.style.width = currentZoomed_width;
-				currentZoomed.classList.remove("zoomed");
+				chkZoom.checked = false;
+				updateZoomState();
 			}
 		});
-		function onHover(evt)
+		chkZoom.addEventListener("change", function(evt)
 		{
-			currentHovered = evt.target;
+			updateZoomState();
+		});
+		document.addEventListener("mousemove", function(evt)
+		{
+			if (evt.pageX < zoomUi.offsetWidth)
+			{
+				lastMoveTime = Date.now();
+				zoomUi.style.opacity = zoomUiMovingOpacity + "%";
+			}
+		});
+		setInterval(function()
+		{
+			if (Date.now() - lastMoveTime > 100)
+			{
+				zoomUi.style.opacity = "100%";
+			}
+		}, 500);
+		function onHoverOverCard(evt)
+		{
+			if (currentHovered != evt.target)
+			{
+				currentHovered = evt.target;
+				updateZoomState();
+			}
 		}
-		function onUnhover(evt)
+		function onUnhoverFromCard(evt)
 		{
-			if (currentZoomed == null) // Don't lose hovered if zoomed or can't rezoom without mouse move
+			if (currentHovered != null)
 			{
 				currentHovered = null;
+				updateZoomState();
+			}
+		}
+		function updateZoomState()
+		{
+			if (!chkZoom.checked || !currentHovered)
+			{
+				zoomUi.style.display = "none";
+			}
+			else
+			{
+				zoomUi.style.display = "inherit";
+				zoomUi.width = currentHovered.width;
+				zoomUi.height = currentHovered.height;
+				zoomUi.getContext("2d").drawImage(currentHovered, 0, 0, currentHovered.width, currentHovered.height, 0, 0, zoomUi.width, zoomUi.height);
 			}
 		}
 	</script>

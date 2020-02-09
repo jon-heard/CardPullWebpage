@@ -1,2 +1,1 @@
-have zoomed card be uniquely id'd element that has card drawn into it on zoom
-fix zooming with no card beneath cursor
+add reference image dropdown to set background to given reference image
