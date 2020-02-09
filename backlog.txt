@@ -1,2 +1,2 @@
+have zoom take up max width OR max height, whichever is smaller
 add references for mythulu generators AND gma AND deck of tales
-get zoom working on iphone when holding mouse over spot and haven't started dragging
