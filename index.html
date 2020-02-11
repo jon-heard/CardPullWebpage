@@ -1,5 +1,10 @@
+<!doctype html>
 <html>
 	<head>
+		<link rel='icon'  type='image/png' href='favicon.png'/>
+		<link rel='apple-touch-icon' href='favicon.png'>
+		<meta name='apple-mobile-web-app-capable' content='yes'>
+		<meta name="apple-mobile-web-app-title" content="Decks">
 		<script src='data.js'></script>
 		<script> const cardSize = 5; </script>
 		<style>
@@ -402,10 +407,8 @@
 			}
 			result.style.width = cardSize + "em";
 			result.classList.add("card");
-			result.addEventListener("touchstart", onCardDragStart);
-			result.addEventListener("mousedown", onCardDragStart);
-			result.addEventListener("mouseover", onHoverOverCard);
-			result.addEventListener("mouseout", onUnhoverFromCard);
+			setupCardForDrag(result);
+			setupCardForZoom(result);
 			body.appendChild(result);
 			if (!cardList.hasOwnProperty(deckIndex)) { cardList[deckIndex] = {}; }
 			cardList[deckIndex][cardIndex] = true;
@@ -424,6 +427,11 @@
 		let dragStartY = 0;
 		let isDragging = false;
 		let isDragCreating = false;
+		function setupCardForDrag(card)
+		{
+			card.addEventListener("touchstart", onCardDragStart);
+			card.addEventListener("mousedown", onCardDragStart);
+		}
 		function onCardDragStart(evt)
 		{
 			evt = evt || window.event;
@@ -462,6 +470,7 @@
 						return onCardDragEnd(evt);
 					}
 					isDragging = true;
+					updateZoomState(); // Refresh zoom now that we are dragging
 					dragStartX = cardBeingDragged.style.left;
 					dragStartY = cardBeingDragged.style.top;
 					cardBeingDragged.classList.add("dragged");
@@ -471,8 +480,8 @@
 			if (isDragging)
 			{
 				evt.preventDefault();
-				cardBeingDragged.style.left = evt.pageX - dragOffsetX;
-				cardBeingDragged.style.top = evt.pageY - dragOffsetY;
+				cardBeingDragged.style.left = (evt.pageX - dragOffsetX) + "px";
+				cardBeingDragged.style.top = (evt.pageY - dragOffsetY) + "px";
 				if (isPointInDeckUi(evt.pageX, evt.pageY))
 				{
 					cardBeingDragged.classList.add("beingDeleted");
@@ -514,13 +523,29 @@
 		const zoomUi = document.getElementById("zoomUi");
 		const chkZoom = document.getElementById("chkZoom");
 		const zoomUiMovingOpacity = 50;
+		const holdTimeForZoom = 500;
 		let currentHovered = null;
 		let lastMoveTime = 0;
+		let zoom_keyDown = false;
+		let zoom_touchingCard = false;
+		function setupCardForZoom(card)
+		{
+			card.addEventListener("touchstart", onCardHeld);
+			card.addEventListener("mousedown", onCardHeld);
+			card.addEventListener("touchend", onCardReleased);
+			card.addEventListener("mouseup", onCardReleased);
+			card.addEventListener("mouseover", onHoverOverCard);
+			card.addEventListener("mouseout", onUnhoverFromCard);
+		}
+		function isZooming()
+		{
+			return (chkZoom.checked || zoom_keyDown || zoom_touchingCard) && !isDragging;
+		}
 		document.addEventListener("keydown", function(evt)
 		{
 			if(evt.key == "Control")
 			{
-				chkZoom.checked = true;
+				zoom_keyDown = true;
 				updateZoomState();
 			}
 		});
@@ -528,7 +553,7 @@
 		{
 			if(evt.key == "Control")
 			{
-				chkZoom.checked = false;
+				zoom_keyDown = false;
 				updateZoomState();
 			}
 		});
@@ -551,6 +576,20 @@
 				zoomUi.style.opacity = "100%";
 			}
 		}, 500);
+		function onCardHeld(evt)
+		{
+			setTimeout(function()
+			{
+				currentHovered = evt.target;
+				zoom_touchingCard = true;
+				updateZoomState();
+			}, holdTimeForZoom);
+		}
+		function onCardReleased(evt)
+		{
+			zoom_touchingCard = false;
+			updateZoomState();
+		}
 		function onHoverOverCard(evt)
 		{
 			if (currentHovered != evt.target)
@@ -569,7 +608,7 @@
 		}
 		function updateZoomState()
 		{
-			if (!chkZoom.checked || !currentHovered)
+			if (!isZooming() || !currentHovered)
 			{
 				zoomUi.style.display = "none";
 			}
