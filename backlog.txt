@@ -1,2 +1,3 @@
 have zoom take up max width OR max height, whichever is smaller
-add references for mythulu generators AND gma AND deck of tales
+references to GMA recipes
+references to deck-of-tales recipes

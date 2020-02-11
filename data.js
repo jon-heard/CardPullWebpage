@@ -188,7 +188,7 @@ d = {
 	name: "Mythulu - characters",
 	images: ["mythulu_characters.png"],
 	backImage: "mythulu_characters_back.jpg",
-	refImages: {},
+	refImages: { "Recipes 1/2": "ref_mythulu_1.png", "Recipes 2/2": "ref_mythulu_2.png" },
 	hiW: 825,
 	hiH: 1125,
 	lowW: 289,
@@ -215,11 +215,11 @@ d = {
 	name: "Mythulu - elements",
 	images: ["mythulu_elements.png"],
 	backImage: "mythulu_elements_back.jpg",
-	refImages: {},
-	hiW: 440,
-	hiH: 600,
-	lowW: 264,
-	lowH: 360,
+	refImages: { "Recipes 1/2": "ref_mythulu_1.png", "Recipes 2/2": "ref_mythulu_2.png" },
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
 	noRedraw: true,
 	allowFlipped: false,
 	cards: []
@@ -241,7 +241,7 @@ d = {
 	name: "Mythulu - habitats",
 	images: ["mythulu_habitats.png"],
 	backImage: "mythulu_habitats_back.jpg",
-	refImages: {},
+	refImages: { "Recipes 1/2": "ref_mythulu_1.png", "Recipes 2/2": "ref_mythulu_2.png" },
 	hiW: 825,
 	hiH: 1125,
 	lowW: 289,
@@ -266,8 +266,8 @@ decks.push(d);
 d = {
 	name: "Mythulu - relationships",
 	images: ["mythulu_relationships.png"],
-	backImage: "mythulu_elements_back.jpg",
-	refImages: {},
+	backImage: "mythulu_relationships_back.jpg",
+	refImages: { "Recipes 1/2": "ref_mythulu_1.png", "Recipes 2/2": "ref_mythulu_2.png" },
 	hiW: 825,
 	hiH: 1125,
 	lowW: 289,
@@ -293,7 +293,7 @@ d = {
 	name: "Mythulu - textures",
 	images: ["mythulu_textures.png"],
 	backImage: "mythulu_textures_back.jpg",
-	refImages: {},
+	refImages: { "Recipes 1/2": "ref_mythulu_1.png", "Recipes 2/2": "ref_mythulu_2.png" },
 	hiW: 825,
 	hiH: 1125,
 	lowW: 289,
@@ -319,7 +319,7 @@ d = {
 	name: "Mythulu - traits",
 	images: ["mythulu_traits.png"],
 	backImage: "mythulu_traits_back.jpg",
-	refImages: {},
+	refImages: { "Recipes 1/2": "ref_mythulu_1.png", "Recipes 2/2": "ref_mythulu_2.png" },
 	hiW: 825,
 	hiH: 1125,
 	lowW: 289,
@@ -335,4 +335,44 @@ for (var i = 0; i < 5; i++)
 		d.cards.push([0, k, i]);
 	}
 }
+decks.push(d);
+
+
+///////////////////
+// Mythulu - all //
+///////////////////
+d = {
+	name: "Mythulu - all",
+	images: ["mythulu_characters.png", "mythulu_elements.png", "mythulu_habitats.png", "mythulu_relationships.png", "mythulu_textures.png", "mythulu_traits.png"],
+	backImage: "mythulu_relationships_back.jpg",
+	refImages: { "Recipes 1/2": "ref_mythulu_1.png", "Recipes 2/2": "ref_mythulu_2.png" },
+	hiW: 825,
+	hiH: 1125,
+	lowW: 289,
+	lowH: 394,
+	noRedraw: true,
+	allowFlipped: false,
+	cards: []
+};
+for (var i = 0; i < 5; i++)
+	for (var k = 0; k < 5; k++)
+	{
+		if (i == 0 && k == 0) { continue; }
+		d.cards.push([0, k, i]);
+	}
+for (var i = 0; i < 5; i++)
+	for (var k = 0; k < 5; k++)
+		d.cards.push([1, k, i]);
+for (var i = 0; i < 5; i++)
+	for (var k = 0; k < 5; k++)
+		d.cards.push([2, k, i]);
+for (var i = 0; i < 5; i++)
+	for (var k = 0; k < 5; k++)
+		d.cards.push([3, k, i]);
+for (var i = 0; i < 5; i++)
+	for (var k = 0; k < 5; k++)
+		d.cards.push([4, k, i]);
+for (var i = 0; i < 5; i++)
+	for (var k = 0; k < 5; k++)
+		d.cards.push([5, k, i]);
 decks.push(d);

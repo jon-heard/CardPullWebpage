@@ -161,8 +161,8 @@
 			for (let i = 0; i < newCards.length; i++)
 			{
 				const rect = newCards[i].getBoundingClientRect();
-				newCards[i].style.left = rect.left;
-				newCards[i].style.top = rect.top;
+				newCards[i].style.left = rect.left + "px";
+				newCards[i].style.top = rect.top + "px";
 			}
 			for (let i = 0; i < newCards.length; i++)
 			{
