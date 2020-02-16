@@ -1,3 +1,5 @@
-have zoom take up max width OR max height, whichever is smaller
+have zoom take up max width OR max height, whichever is smaller (AND based on scale)
+checkbox for "zoom reference"
+
 references to GMA recipes
 references to deck-of-tales recipes

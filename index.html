@@ -528,9 +528,11 @@
 		let lastMoveTime = 0;
 		let zoom_keyDown = false;
 		let zoom_touchingCard = false;
+		let zoom_holdingCard = false;
 		function setupCardForZoom(card)
 		{
 			card.addEventListener("touchstart", onCardHeld);
+			document.addEventListener("touchstart", onPageTouch);
 			card.addEventListener("mousedown", onCardHeld);
 			card.addEventListener("touchend", onCardReleased);
 			card.addEventListener("mouseup", onCardReleased);
@@ -539,7 +541,7 @@
 		}
 		function isZooming()
 		{
-			return (chkZoom.checked || zoom_keyDown || zoom_touchingCard) && !isDragging;
+			return (chkZoom.checked || zoom_keyDown || zoom_holdingCard) && !isDragging;
 		}
 		document.addEventListener("keydown", function(evt)
 		{
@@ -578,17 +580,34 @@
 		}, 500);
 		function onCardHeld(evt)
 		{
+			zoom_touchingCard = false;
+			zoom_holdingCard = false;
+			if (evt.touches && evt.touches.length > 1) { return; } // only drag on single-finger touch
+			zoom_touchingCard = true;
 			setTimeout(function()
 			{
-				currentHovered = evt.target;
-				zoom_touchingCard = true;
-				updateZoomState();
+				if (zoom_touchingCard)
+				{
+					currentHovered = evt.target;
+					zoom_holdingCard = true;
+					updateZoomState();
+				}
 			}, holdTimeForZoom);
 		}
 		function onCardReleased(evt)
 		{
+			if (evt.touches && evt.touches.length > 1) { return; } // only drag on single-finger touch
 			zoom_touchingCard = false;
+			zoom_holdingCard = false;
 			updateZoomState();
+		}
+		function onPageTouch(evt)
+		{
+			if (evt.touches && evt.touches.length > 1) // cancel touch-hold with second finger touch
+			{
+				zoom_touchingCard = false;
+				zoom_holdingCard = false;
+			}
 		}
 		function onHoverOverCard(evt)
 		{
