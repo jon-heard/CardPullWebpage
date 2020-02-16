@@ -1,4 +1,10 @@
-change reference to a card locked at lower-right.  This allows for zooming
 
 references to GMA recipes
 references to deck-of-tales recipes
+
+add deck name below cards while holding
+
+change reference to a card locked at lower-right.  This allows for zooming
+
+dice cards have dice outline in white behind text
+

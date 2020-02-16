@@ -67,8 +67,9 @@
 	<body>
 		<select id='deckList'><option value='-1'>--choose a deck--</option></select> &nbsp;
 		<select id='refList'><option value=''>--No references--</option></select> &nbsp;
-		<input type='checkbox' id='chkZoom'>Zoom</button> &nbsp;
+		<input type='checkbox' id='chkZoom'>Card zoom</button> &nbsp;
 		<button id='btnClear'>Clear</button> &nbsp;
+		<input type='checkbox' id='chkRefZoom'>Reference zoom</button> &nbsp;
 		<input type='checkbox' id='chkNoRedraw'>No redraw</button> &nbsp;
 		<input type='checkbox' id='chkAllowFlipped'>Allow flipped</button> &nbsp;
 		<button id='btnShowAll'>Show All</button> &nbsp;
@@ -321,15 +322,18 @@
 		deckList.addEventListener("change", onDeckSelected);
 
 
-		////////////////////////
-		// LIST OF REFERENCES //
-		////////////////////////
+		////////////////
+		// REFERENCES //
+		////////////////
 		const refList = document.getElementById("refList");
-		function onRefSelected()
+		refList.addEventListener("change", function(evt)
 		{
 			body.style["background-image"] = "url(media/" + refList.value + ")";
-		}
-		refList.addEventListener("change", onRefSelected);
+		});
+		document.getElementById("chkRefZoom").addEventListener("change", function(evt)
+		{
+			body.style["background-size"] = evt.target.checked ? "50%" : "";
+		});
 
 
 		//////////////////////////////////

@@ -5,6 +5,134 @@ var decks = [];
 let d; // Temporary deck buffer
 
 ///////////
+// DICE //
+///////////
+decks.push({
+	name: "D2",
+	images: ["numbers.png"],
+	backImage: "d2_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [ [0,0,0], [0,1,0] ]
+});
+decks.push({
+	name: "D3",
+	images: ["numbers.png"],
+	backImage: "d3_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [ [0,0,0], [0,1,0], [0,2,0] ]
+});
+decks.push({
+	name: "D4",
+	images: ["numbers.png"],
+	backImage: "d4_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [ [0,0,0], [0,1,0], [0,2,0], [0,3,0] ]
+});
+decks.push({
+	name: "D6",
+	images: ["numbers.png"],
+	backImage: "d6_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [ [0,0,0], [0,1,0], [0,2,0], [0,3,0], [0,4,0], [0,5,0] ]
+});
+decks.push({
+	name: "D8",
+	images: ["numbers.png"],
+	backImage: "d8_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [ [0,0,0], [0,1,0], [0,2,0], [0,3,0], [0,4,0], [0,5,0], [0,6,0], [0,7,0] ]
+});
+decks.push({
+	name: "D10",
+	images: ["numbers.png"],
+	backImage: "d10_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [ [0,0,0], [0,1,0], [0,2,0], [0,3,0], [0,4,0], [0,5,0], [0,6,0], [0,7,0], [0,8,0], [0,9,0] ]
+});
+decks.push({
+	name: "D10-10",
+	images: ["numbers.png"],
+	backImage: "d10_10_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [
+		[0,5,1], [0,6,1], [0,7,1], [0,8,1], [0,9,1], [0,10,1], [0,11,1], [0,12,1], [0,13,1], [0,14,1],
+		[0,15,1] ]
+});
+decks.push({
+	name: "D12",
+	images: ["numbers.png"],
+	backImage: "d12_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [
+		[0,0,0], [0,1,0], [0,2,0], [0,3,0], [0,4,0], [0,5,0], [0,6,0], [0,7,0], [0,8,0], [0,9,0],
+		[0,10,0], [0,11,0] ]
+});
+decks.push({
+	name: "D20",
+	images: ["numbers.png"],
+	backImage: "d20_back.png",
+	refImages: {},
+	hiW: 25,
+	hiH: 19,
+	lowW: 13,
+	lowH: 10,
+	noRedraw: false,
+	allowFlipped: false,
+	cards: [
+		[0,0,0], [0,1,0], [0,2,0], [0,3,0], [0,4,0], [0,5,0], [0,6,0], [0,7,0], [0,8,0], [0,9,0],
+		[0,10,0], [0,11,0], [0,12,0], [0,13,0], [0,14,0], [0,0,1], [0,1,1], [0,2,1], [0,3,1], [0,4,1] ]
+});
+
+
+///////////
 // Tarot //
 ///////////
 d = {
