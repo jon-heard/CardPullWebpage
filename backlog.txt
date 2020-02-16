@@ -1,5 +1,4 @@
-have zoom take up max width OR max height, whichever is smaller (AND based on scale)
-checkbox for "zoom reference"
+change reference to a card locked at lower-right.  This allows for zooming
 
 references to GMA recipes
 references to deck-of-tales recipes

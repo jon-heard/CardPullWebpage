@@ -57,10 +57,7 @@
 			}
 			#zoomUi
 			{
-				position: fixed;
-				right: 0;
-				top: 0;
-				height: 100%;
+				position: absolute;
 				z-index: 100;
 				pointer-events: none;
 			}
@@ -637,6 +634,23 @@
 				zoomUi.width = currentHovered.width;
 				zoomUi.height = currentHovered.height;
 				zoomUi.getContext("2d").drawImage(currentHovered, 0, 0, currentHovered.width, currentHovered.height, 0, 0, zoomUi.width, zoomUi.height);
+				
+				let windowAspect = window.innerWidth / window.innerHeight;
+				let zoomUiAspect = zoomUi.width / zoomUi.height;
+				if (windowAspect > zoomUiAspect)
+				{
+					zoomUi.style.width = "";
+					zoomUi.style.height = window.innerHeight + "px";
+					zoomUi.style.left = (window.scrollX + ((window.innerWidth - window.innerHeight * zoomUiAspect) * 0.5)) + "px";
+					zoomUi.style.top = window.scrollY + "px";
+				}
+				else
+				{
+					zoomUi.style.width = window.innerWidth + "px";
+					zoomUi.style.height = "";
+					zoomUi.style.left = window.scrollX + "px";
+					zoomUi.style.top = (window.scrollY + ((window.innerHeight - window.innerWidth / zoomUiAspect) * 0.5)) + "px";
+				}
 			}
 		}
 	</script>
