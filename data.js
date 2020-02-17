@@ -86,7 +86,7 @@ decks.push({
 	cards: [ [0,0,0], [0,1,0], [0,2,0], [0,3,0], [0,4,0], [0,5,0], [0,6,0], [0,7,0], [0,8,0], [0,9,0] ]
 });
 decks.push({
-	name: "D10-10",
+	name: "D10 (x10)",
 	images: ["numbers.png"],
 	backImage: "d10_10_back.png",
 	refImages: {},
@@ -97,8 +97,7 @@ decks.push({
 	noRedraw: false,
 	allowFlipped: false,
 	cards: [
-		[0,5,1], [0,6,1], [0,7,1], [0,8,1], [0,9,1], [0,10,1], [0,11,1], [0,12,1], [0,13,1], [0,14,1],
-		[0,15,1] ]
+		[0,5,1], [0,6,1], [0,7,1], [0,8,1], [0,9,1], [0,10,1], [0,11,1], [0,12,1], [0,13,1], [0,14,1] ]
 });
 decks.push({
 	name: "D12",
@@ -140,10 +139,10 @@ d = {
 	images: ["tarot_1.png", "tarot_2.png"],
 	backImage: "tarot_back.jpg",
 	refImages: {},
-	hiW: 551,
-	hiH: 945,
-	lowW: 138,
-	lowH: 236,
+	hiW: 277,
+	hiH: 500,
+	lowW: 111,
+	lowH: 200,
 	noRedraw: true,
 	allowFlipped: true,
 	cards: []
@@ -152,8 +151,7 @@ for (var i = 0; i < 6; i++)
 {
 	for (var k = 0; k < 10; k++)
 	{
-		if (i == 0 && k == 0) { continue; } // skip first card
-		if (i == 5 && k > 6) { continue; }
+		if (i == 5 && k > 5) { continue; }
 		d.cards.push([0, k, i]);
 	}
 }
@@ -163,6 +161,55 @@ for (var i = 0; i < 3; i++)
 	{
 		if (i == 2 && k > 1) { continue; }
 		d.cards.push([1, k, i]);
+	}
+}
+decks.push(d);
+
+
+/////////////////
+// Story cubes //
+/////////////////
+d = {
+	name: "Story cubes",
+	images: ["storyCubes.png"],
+	backImage: "storyCubes_back.png",
+	refImages: {},
+	hiW: 109,
+	hiH: 109,
+	lowW: 43,
+	lowH: 43,
+	noRedraw: true,
+	allowFlipped: false,
+	cards: []
+};
+for (var i = 0; i < 7; i++)
+{
+	for (var k = 0; k < 8; k++)
+	{
+		if (i == 6 && k > 5) { continue; }
+		d.cards.push([0, k, i]);
+	}
+}
+decks.push(d);
+d = {
+	name: "Story cubes: actions",
+	images: ["storyCubes_actions.png"],
+	backImage: "storyCubes_actions_back.png",
+	refImages: {},
+	hiW: 109,
+	hiH: 109,
+	lowW: 43,
+	lowH: 43,
+	noRedraw: true,
+	allowFlipped: false,
+	cards: []
+};
+for (var i = 0; i < 7; i++)
+{
+	for (var k = 0; k < 8; k++)
+	{
+		if (i == 6 && k > 5) { continue; }
+		d.cards.push([0, k, i]);
 	}
 }
 decks.push(d);
@@ -217,7 +264,7 @@ d = {
 	name: "GM Apprentice",
 	images: ["gmApprentice_1.png", "gmApprentice_2.png", "gmApprentice_3.png"],
 	backImage: "gmApprentice_back.png",
-	refImages: { tags: "ref_gmApprentice_1.png",  "runes 1/3": "ref_gmApprentice_2.png",  "runes 2/3": "ref_gmApprentice_3.png",  "runes 3/3": "ref_gmApprentice_4.png",  elements: "ref_gmApprentice_5.png" },
+	refImages: { recipes: "ref_gma_recipes.png", tags: "ref_gma_tags.png", elements: "ref_gma_elements.png",  "runes 1/3": "ref_gma_runes1.png",  "runes 2/3": "ref_gma_runes2.png",  "runes 3/3": "ref_gma_runes3.png", "Char traits": "ref_gma_charTraits.png", Professions: "ref_gma_professions.png", "Encounter traits": "ref_gma_encounterTraits.png", Loot: "ref_gma_loot.png", Quests: "ref_gma_quest.png", "Quest givers": "ref_gma_questGiver.png", "Quest premise": "ref_gma_questPremise.png", "Quest reason": "ref_gma_questReason.png" },
 	hiW: 825,
 	hiH: 1125,
 	lowW: 248,
@@ -284,7 +331,7 @@ d = {
 		"gmaFantasy/116.jpg", "gmaFantasy/117.jpg", "gmaFantasy/118.jpg", "gmaFantasy/119.jpg", "gmaFantasy/120.jpg",
 	],
 	backImage: "gmaFantasy/back.png",
-	refImages: { tags: "ref_gmApprentice_1.png",  "runes 1/3": "ref_gmApprentice_2.png",  "runes 2/3": "ref_gmApprentice_3.png",  "runes 3/3": "ref_gmApprentice_4.png",  elements: "ref_gmApprentice_5.png" },
+	refImages: { recipes: "ref_gma_recipes.png", tags: "ref_gma_tags.png", elements: "ref_gma_elements.png",  "runes 1/3": "ref_gma_runes1.png",  "runes 2/3": "ref_gma_runes2.png",  "runes 3/3": "ref_gma_runes3.png", "Char traits": "ref_gma_charTraits.png", Professions: "ref_gma_professions.png", "Encounter traits": "ref_gma_encounterTraits.png", Loot: "ref_gma_loot.png", Quests: "ref_gma_quest.png", "Quest givers": "ref_gma_questGiver.png", "Quest premise": "ref_gma_questPremise.png", "Quest reason": "ref_gma_questReason.png" },
 	hiW: 825,
 	hiH: 1125,
 	lowW: 289,

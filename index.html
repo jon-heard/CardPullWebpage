@@ -523,7 +523,6 @@
 		//////////
 		const zoomUi = document.getElementById("zoomUi");
 		const chkZoom = document.getElementById("chkZoom");
-		const zoomUiMovingOpacity = 50;
 		const holdTimeForZoom = 500;
 		let currentHovered = null;
 		let lastMoveTime = 0;
@@ -569,16 +568,8 @@
 			if (evt.pageX > body.offsetWidth - zoomUi.offsetWidth)
 			{
 				lastMoveTime = Date.now();
-				zoomUi.style.opacity = zoomUiMovingOpacity + "%";
 			}
 		});
-		setInterval(function()
-		{
-			if (Date.now() - lastMoveTime > 100)
-			{
-				zoomUi.style.opacity = "100%";
-			}
-		}, 500);
 		function onCardHeld(evt)
 		{
 			zoom_touchingCard = false;
